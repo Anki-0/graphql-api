@@ -41,3 +41,9 @@ export const FIND_POSTS_WITH_TAGS = async (props: FindPostWithTagsProp) => {
     ]
   });
 };
+
+export const DELTE_POST_WITH_ID = async (postId: string, userId: string) => {
+  return await db.post.destroy({
+    where: { id: postId, publishedBy: userId }
+  });
+};

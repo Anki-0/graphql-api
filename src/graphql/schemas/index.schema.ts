@@ -23,6 +23,7 @@ type Mutation {
 
   #Post
   createPost(input: PostCreationInput!): Post!
+  deletePost(input: PostDeletionArgs!): PostDeletionRespose!
 }
 
 

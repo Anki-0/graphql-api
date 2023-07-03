@@ -5,6 +5,7 @@ import {
 } from '../../../__generated__/resolvers-types.js';
 import { parseJSON } from 'date-fns';
 import { QueryTypes } from 'sequelize';
+import { DELTE_POST_WITH_ID } from '../../../lib/postsQueries.js';
 
 // Demo user
 const auth = {
@@ -91,5 +92,44 @@ export const PostMutations: MutationResolvers = {
     }
 
     return CreatedPost as unknown as Post;
+  },
+  deletePost: async (_, { input }) => {
+    const { postId } = input;
+
+    /**
+     * Verify that the user is authenticated and authorized to perform the action.
+     */
+    if (!auth.isUserLogged) {
+      return {
+        error: { message: 'user not authenticate.' }
+      };
+    }
+
+    /**
+     *  Ensure that the user requesting the deletion is the actual owner of the post, by providing the logged in user id.
+     */
+    const deletedPost = await DELTE_POST_WITH_ID(postId, auth.currentUser.id);
+
+    /**
+     *  if every-thing is O.K.
+     */
+    if (deletedPost) {
+      return {
+        success: {
+          deletedPostId: postId,
+          message: 'Post Deleted Successfully 😄'
+        }
+      };
+    }
+
+    /**
+     *  If error occur or postID is not correct or etc...
+     */
+
+    return {
+      error: {
+        message: 'An error occured while deleting Post. Please contact admin.'
+      }
+    };
   }
 };

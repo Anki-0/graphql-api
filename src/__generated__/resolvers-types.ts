@@ -82,6 +82,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   createAccount: CreateAccountResponse;
   createPost: Post;
+  deletePost: PostDeletionRespose;
   emailSignup: SingupResponse;
   signIn: SigninResponse;
   verifyToken: VerifyTokenResponse;
@@ -95,6 +96,11 @@ export type MutationCreateAccountArgs = {
 
 export type MutationCreatePostArgs = {
   input: PostCreationInput;
+};
+
+
+export type MutationDeletePostArgs = {
+  input: PostDeletionArgs;
 };
 
 
@@ -152,6 +158,26 @@ export type PostCreationInput = {
   subTitle?: InputMaybe<Scalars['String']['input']>;
   tags?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   title: Scalars['String']['input'];
+};
+
+export type PostDeleteError = {
+  __typename?: 'PostDeleteError';
+  message: Scalars['String']['output'];
+};
+
+export type PostDeleteSuccess = {
+  __typename?: 'PostDeleteSuccess';
+  message: Scalars['String']['output'];
+};
+
+export type PostDeletionArgs = {
+  postId: Scalars['ID']['input'];
+};
+
+export type PostDeletionRespose = {
+  __typename?: 'PostDeletionRespose';
+  error?: Maybe<PostDeleteError>;
+  success?: Maybe<PostDeleteSuccess>;
 };
 
 export type PostFilterInput = {
@@ -405,6 +431,10 @@ export type ResolversTypes = ResolversObject<{
   PaginationResponse: ResolverTypeWrapper<PaginationResponse>;
   Post: ResolverTypeWrapper<Post>;
   PostCreationInput: PostCreationInput;
+  PostDeleteError: ResolverTypeWrapper<PostDeleteError>;
+  PostDeleteSuccess: ResolverTypeWrapper<PostDeleteSuccess>;
+  PostDeletionArgs: PostDeletionArgs;
+  PostDeletionRespose: ResolverTypeWrapper<PostDeletionRespose>;
   PostFilterInput: PostFilterInput;
   PostStatus: PostStatus;
   PostsResponse: ResolverTypeWrapper<PostsResponse>;
@@ -450,6 +480,10 @@ export type ResolversParentTypes = ResolversObject<{
   PaginationResponse: PaginationResponse;
   Post: Post;
   PostCreationInput: PostCreationInput;
+  PostDeleteError: PostDeleteError;
+  PostDeleteSuccess: PostDeleteSuccess;
+  PostDeletionArgs: PostDeletionArgs;
+  PostDeletionRespose: PostDeletionRespose;
   PostFilterInput: PostFilterInput;
   PostsResponse: PostsResponse;
   Query: {};
@@ -510,6 +544,7 @@ export type ErrorResolvers<ContextType = Context, ParentType extends ResolversPa
 export type MutationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   createAccount?: Resolver<ResolversTypes['CreateAccountResponse'], ParentType, ContextType, RequireFields<MutationCreateAccountArgs, 'input'>>;
   createPost?: Resolver<ResolversTypes['Post'], ParentType, ContextType, RequireFields<MutationCreatePostArgs, 'input'>>;
+  deletePost?: Resolver<ResolversTypes['PostDeletionRespose'], ParentType, ContextType, RequireFields<MutationDeletePostArgs, 'input'>>;
   emailSignup?: Resolver<ResolversTypes['SingupResponse'], ParentType, ContextType, RequireFields<MutationEmailSignupArgs, 'input'>>;
   signIn?: Resolver<ResolversTypes['SigninResponse'], ParentType, ContextType, RequireFields<MutationSignInArgs, 'input'>>;
   verifyToken?: Resolver<ResolversTypes['VerifyTokenResponse'], ParentType, ContextType, RequireFields<MutationVerifyTokenArgs, 'input'>>;
@@ -534,6 +569,22 @@ export type PostResolvers<ContextType = Context, ParentType extends ResolversPar
   tags?: Resolver<Maybe<Array<Maybe<ResolversTypes['Tag']>>>, ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PostDeleteErrorResolvers<ContextType = Context, ParentType extends ResolversParentTypes['PostDeleteError'] = ResolversParentTypes['PostDeleteError']> = ResolversObject<{
+  message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PostDeleteSuccessResolvers<ContextType = Context, ParentType extends ResolversParentTypes['PostDeleteSuccess'] = ResolversParentTypes['PostDeleteSuccess']> = ResolversObject<{
+  message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PostDeletionResposeResolvers<ContextType = Context, ParentType extends ResolversParentTypes['PostDeletionRespose'] = ResolversParentTypes['PostDeletionRespose']> = ResolversObject<{
+  error?: Resolver<Maybe<ResolversTypes['PostDeleteError']>, ParentType, ContextType>;
+  success?: Resolver<Maybe<ResolversTypes['PostDeleteSuccess']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -625,6 +676,9 @@ export type Resolvers<ContextType = Context> = ResolversObject<{
   Mutation?: MutationResolvers<ContextType>;
   PaginationResponse?: PaginationResponseResolvers<ContextType>;
   Post?: PostResolvers<ContextType>;
+  PostDeleteError?: PostDeleteErrorResolvers<ContextType>;
+  PostDeleteSuccess?: PostDeleteSuccessResolvers<ContextType>;
+  PostDeletionRespose?: PostDeletionResposeResolvers<ContextType>;
   PostsResponse?: PostsResponseResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   SigninError?: SigninErrorResolvers<ContextType>;

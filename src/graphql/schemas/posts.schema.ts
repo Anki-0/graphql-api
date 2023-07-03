@@ -65,6 +65,10 @@ enum PostStatus {
     banner: String
     tags: [String]
   }
+
+  input PostDeletionArgs{
+    postId:ID!
+  } 
   
   #####################################################
   #############  Users Query Responses.  ##############
@@ -73,6 +77,18 @@ enum PostStatus {
   type PostsResponse {
     data: [Post]!
     pagination: PaginationResponse
+  }
+
+  type PostDeletionRespose{
+    success:PostDeleteSuccess
+    error:PostDeleteError
+  }
+
+  type PostDeleteSuccess{
+    message:String!
+  }
+  type PostDeleteError{
+    message:String!
   }
   
 `;
