@@ -4,7 +4,7 @@ import { __PRODUCTION__ } from '../../utils/assertions.js';
 import { loadCustomScalars } from '../scalars/index.js';
 import { loadCustomDerivatives } from '../directives/index.js';
 
-const EXT = __PRODUCTION__ ? 'ts' : 'ts';
+const EXT = __PRODUCTION__ ? 'js' : 'ts';
 
 // @ts-ignore
 const __dirname = getDirname(import.meta.url);
