@@ -14,6 +14,13 @@ interface FindPostWithTagsProp {
 export const FIND_POSTS = async (props: FindPostWithTagsProp) => {
   const { whereFilter, sortFilter, attributes, pagination } = props;
 
+  /**
+   * Default whereFilter
+   */
+  if (Object.keys(whereFilter).length === 0) {
+    Object.assign(whereFilter, { status: 'published' });
+  }
+
   return await db.post.findAll({
     where: { ...whereFilter },
     order: (sortFilter as any) ?? undefined,
@@ -25,6 +32,13 @@ export const FIND_POSTS = async (props: FindPostWithTagsProp) => {
 
 export const FIND_POSTS_WITH_TAGS = async (props: FindPostWithTagsProp) => {
   const { whereFilter, sortFilter, attributes, pagination } = props;
+
+  /**
+   * Default whereFilter
+   */
+  if (Object.keys(whereFilter).length === 0) {
+    Object.assign(whereFilter, { status: 'published' });
+  }
 
   return await db.post.findAll({
     where: { ...whereFilter },
@@ -42,7 +56,7 @@ export const FIND_POSTS_WITH_TAGS = async (props: FindPostWithTagsProp) => {
   });
 };
 
-export const DELTE_POST_WITH_ID = async (postId: string, userId: string) => {
+export const DELETE_POST_WITH_ID = async (postId: string, userId: string) => {
   return await db.post.destroy({
     where: { id: postId, publishedBy: userId }
   });
