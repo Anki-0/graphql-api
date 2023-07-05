@@ -5,7 +5,7 @@ import {
 } from '../../../__generated__/resolvers-types.js';
 import { parseJSON } from 'date-fns';
 import { QueryTypes } from 'sequelize';
-import { DELTE_POST_WITH_ID } from '../../../lib/postsQueries.js';
+import { DELETE_POST_WITH_ID } from '../../../lib/postsQueries.js';
 
 // Demo user
 const auth = {
@@ -108,7 +108,7 @@ export const PostMutations: MutationResolvers = {
     /**
      *  Ensure that the user requesting the deletion is the actual owner of the post, by providing the logged in user id.
      */
-    const deletedPost = await DELTE_POST_WITH_ID(postId, auth.currentUser.id);
+    const deletedPost = await DELETE_POST_WITH_ID(postId, auth.currentUser.id);
 
     /**
      *  if every-thing is O.K.
