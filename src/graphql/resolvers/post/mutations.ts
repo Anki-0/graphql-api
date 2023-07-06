@@ -2,7 +2,7 @@ import { GraphQLError } from 'graphql';
 import {
   MutationResolvers,
   Post
-} from '../../../__generated__/resolvers-types.js';
+} from '../../../types/__generated__/resolvers-types.js';
 import { parseJSON } from 'date-fns';
 import { QueryTypes } from 'sequelize';
 import { DELETE_POST_WITH_ID } from '../../../lib/postsQueries.js';

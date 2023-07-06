@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { getDirname } from '../../utils/common.js';
+import { getDirname } from '../../utils/helpers.js';
 import { __PRODUCTION__ } from '../../utils/assertions.js';
 
 const isUppercase = (value: string) => value === value.toUpperCase();

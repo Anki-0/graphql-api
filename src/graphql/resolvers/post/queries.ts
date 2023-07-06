@@ -1,10 +1,6 @@
 import graphqlFields from 'graphql-fields';
 
-import {
-  OrderByFilter,
-  Post,
-  QueryResolvers
-} from '../../../__generated__/resolvers-types.js';
+import { OrderByFilter, Post, QueryResolvers } from '../../../types/__generated__/resolvers-types.js';
 import { GraphQLError } from 'graphql';
 import { ResolveWhereFilter } from '../../../utils/database.js';
 import { FIND_POSTS, FIND_POSTS_WITH_TAGS } from '../../../lib/postsQueries.js';
@@ -25,11 +21,7 @@ export const PostQueries: QueryResolvers = {
 
     /** Selected Fields */
     const fields = Object.keys(
-      graphqlFields(
-        info,
-        {},
-        { processArguments: true, excludedFields: ['__typename'] }
-      ).data
+      graphqlFields(info, {}, { processArguments: true, excludedFields: ['__typename'] }).data
     );
 
     /**
@@ -44,9 +36,7 @@ export const PostQueries: QueryResolvers = {
          * we must not allow his to do so unless, he/she is authorized.
          */
         if (publishedBy && publishedBy !== auth.currentUser.id) {
-          throw new GraphQLError(
-            'You are not permitted to see privated and draft post of other users.'
-          );
+          throw new GraphQLError('You are not permitted to see privated and draft post of other users.');
         } else {
           if (!publishedBy && auth.isUserLogged) {
             Object.assign(whereFilter, {
@@ -67,10 +57,7 @@ export const PostQueries: QueryResolvers = {
     if (input?.orderBy) {
       const { orderBy } = input;
 
-      orderByFilter = Object.keys(orderBy).map((key) => [
-        key,
-        orderBy[key as keyof OrderByFilter]
-      ]);
+      orderByFilter = Object.keys(orderBy).map((key) => [key, orderBy[key as keyof OrderByFilter]]);
 
       if (orderBy.createdAt && !fields.includes('createdAt')) {
         fields.push('createdAt');

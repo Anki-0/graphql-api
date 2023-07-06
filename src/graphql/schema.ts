@@ -1,7 +1,7 @@
 import Resolvers from './resolvers/index.js';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { loadCustomDerivatives } from './directives/index.js';
-import typeDefs from './schemas/typeDefs.generated.js';
+import typeDefs from './schemas/__generated__/typeDefs.js';
 
 const { loadDirectiveTransformers } = loadCustomDerivatives;
 

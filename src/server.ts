@@ -10,6 +10,7 @@ import app from './app.js';
 import db from './database/index.js';
 import schema from './graphql/schema.js';
 import { Context, context } from './graphql/context.js';
+import { error } from 'console';
 
 (async () => {
   const httpServer = http.createServer(app);
@@ -39,15 +40,16 @@ import { Context, context } from './graphql/context.js';
   );
 
   // Modified server startup
-  await new Promise<void>((resolve) =>
-    httpServer.listen({ port: 4000 }, resolve)
-  ).then(async () => {
+  await new Promise<void>((resolve) => httpServer.listen({ port: 4000 }, resolve)).then(async () => {
     await db.sequelize
       .sync({
         // force: true
         // alter: true
       })
-      .then(() => console.log(`🚀 Database ready at URL `));
+      .then(() => console.log(`🚀 Database ready`))
+      .catch((error) => {
+        throw new Error(error);
+      });
   });
 
   console.log(`🚀 Server ready at http://localhost:4000/`);

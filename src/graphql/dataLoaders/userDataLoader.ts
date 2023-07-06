@@ -1,5 +1,5 @@
 import { Op } from 'sequelize';
-import { User } from '../../__generated__/resolvers-types.js';
+import { User } from '../../types/__generated__/resolvers-types.js';
 import { createFieldLoader } from '../../utils/dataloader.js';
 import db from '../../database/index.js';
 

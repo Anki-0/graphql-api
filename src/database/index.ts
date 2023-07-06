@@ -1,7 +1,7 @@
 import { highlight } from 'cli-highlight';
 import { Sequelize, DataTypes, Op, type Dialect } from 'sequelize';
 
-import config from '../config/databse-config.js';
+import config from '../config/database-config.js';
 import { __DEV__ } from '../utils/assertions.js';
 
 /**MODEL IMPORT */
@@ -56,12 +56,7 @@ let db = {
 
 Object.keys(db).forEach((modelName) => {
   const name = modelName as keyof typeof db;
-  if (
-    name !== 'Sequelize' &&
-    name !== 'sequelize' &&
-    name !== 'Op' &&
-    db[name].associate !== undefined
-  ) {
+  if (name !== 'Sequelize' && name !== 'sequelize' && name !== 'Op' && db[name].associate !== undefined) {
     db[name].associate(db);
   }
 });

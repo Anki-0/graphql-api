@@ -1,7 +1,7 @@
 import {
   InputMaybe,
   PaginationInput
-} from '../__generated__/resolvers-types.js';
+} from '../types/__generated__/resolvers-types.js';
 import db from '../database/index.js';
 
 interface FindPostWithTagsProp {

@@ -1,6 +1,9 @@
 import { GraphQLError } from 'graphql';
 import graphqlFields from 'graphql-fields';
-import { Resolvers, User } from '../../../__generated__/resolvers-types.js';
+import {
+  Resolvers,
+  User
+} from '../../../types/__generated__/resolvers-types.js';
 
 export const PostFields: Resolvers = {
   Post: {

@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { getDirname } from '../../utils/common.js';
+import { getDirname } from '../../utils/helpers.js';
 import path from 'path';
 import { GraphQLSchema } from 'graphql';
 import { __PRODUCTION__ } from '../../utils/assertions.js';
