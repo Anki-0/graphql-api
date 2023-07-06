@@ -1,5 +1,5 @@
 import {gql} from 'graphql-tag'; export default gql`#graphql
-#graphql
+ #graphql
 
                       directive @date(
                       defaultFormat: String = "dd/MM/yyyy"
