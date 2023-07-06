@@ -3,12 +3,12 @@
 export const BooksQueries = {
   books: () => [
     {
-      title: "The Awakening",
-      author: "Kate Chopin",
+      title: 'The Awakening',
+      author: 'Kate Chopin'
     },
     {
-      title: "City of Glass",
-      author: "Paul Auster",
-    },
-  ],
+      title: 'City of Glass',
+      author: 'Paul Auster'
+    }
+  ]
 };

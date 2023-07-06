@@ -23,10 +23,7 @@ const CreateFilePathMap = (graphqlScalarsFiles: string[], __path: string) => {
         file.slice(file.indexOf('-'), -3) === '-directive' &&
         file.slice(-3) === `.${EXT}`
       ) {
-        FilePathMap.set(
-          file,
-          path.relative(_dirname, filePath).replaceAll('\\', '/')
-        );
+        FilePathMap.set(file, path.relative(_dirname, filePath).replaceAll('\\', '/'));
       }
     }
 

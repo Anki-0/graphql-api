@@ -3,8 +3,7 @@ import { CustomScalar } from '../type.js';
 import { parseDateTime } from './formatter.js';
 import { validateDateTime, validateJSDate } from './validator.js';
 
-const DateTimeScalarTypeDef = (scalarName: string) =>
-  `#graphql\n scalar ${scalarName} \n`;
+const DateTimeScalarTypeDef = (scalarName: string) => `#graphql\n scalar ${scalarName} \n`;
 
 const DateTimeScalar: CustomScalar = (scalarName = 'DateTime') => {
   return {
@@ -22,47 +21,33 @@ const DateTimeScalar: CustomScalar = (scalarName = 'DateTime') => {
           if (validateJSDate(value)) {
             return value;
           }
-          throw new GraphQLError(
-            `DateTime cannot represent an invalid date-time-string ${value}.`
-          );
+          throw new GraphQLError(`DateTime cannot represent an invalid date-time-string ${value}.`);
         }
 
         if (typeof value === 'string') {
           if (validateDateTime(value)) {
             return parseDateTime(value);
           }
-          throw new GraphQLError(
-            `DateTime cannot represent an invalid date-time-string ${value}.`
-          );
+          throw new GraphQLError(`DateTime cannot represent an invalid date-time-string ${value}.`);
         }
-        throw new GraphQLError(
-          `DateTime cannot represent non string or Date type ${JSON.stringify(
-            value
-          )}`
-        );
+        throw new GraphQLError(`DateTime cannot represent non string or Date type ${JSON.stringify(value)}`);
       },
       serialize(value) {
         if (value instanceof Date) {
           if (validateJSDate(value)) {
             return value;
           }
-          throw new GraphQLError(
-            'DateTime cannot represent an invalid Date instance'
-          );
+          throw new GraphQLError('DateTime cannot represent an invalid Date instance');
         } else if (typeof value === 'string') {
           if (validateDateTime(value)) {
             return parseDateTime(value);
           }
-          throw new GraphQLError(
-            `DateTime cannot represent an invalid date-time-string ${value}.`
-          );
+          throw new GraphQLError(`DateTime cannot represent an invalid date-time-string ${value}.`);
         } else if (typeof value === 'number') {
           try {
             return new Date(value);
           } catch (e) {
-            throw new GraphQLError(
-              'DateTime cannot represent an invalid Unix timestamp ' + value
-            );
+            throw new GraphQLError('DateTime cannot represent an invalid Unix timestamp ' + value);
           }
         } else {
           throw new GraphQLError(
@@ -75,9 +60,7 @@ const DateTimeScalar: CustomScalar = (scalarName = 'DateTime') => {
       parseLiteral(ast) {
         if (ast.kind !== Kind.STRING) {
           throw new GraphQLError(
-            `DateTime cannot represent non string or Date type ${
-              'value' in ast && ast.value
-            }`,
+            `DateTime cannot represent non string or Date type ${'value' in ast && ast.value}`,
             {
               nodes: ast
             }
@@ -87,12 +70,9 @@ const DateTimeScalar: CustomScalar = (scalarName = 'DateTime') => {
         if (validateDateTime(value)) {
           return parseDateTime(value);
         }
-        throw new GraphQLError(
-          `DateTime cannot represent an invalid date-time-string ${String(
-            value
-          )}.`,
-          { nodes: ast }
-        );
+        throw new GraphQLError(`DateTime cannot represent an invalid date-time-string ${String(value)}.`, {
+          nodes: ast
+        });
       }
     })
   };

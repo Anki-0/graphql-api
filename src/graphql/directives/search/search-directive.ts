@@ -30,19 +30,14 @@ const typeFilterMap = new Map([
   ['DateTime', ['_lt', '_le', '_eq', '_in', '_between', '_gte', '_gt']]
 ]);
 
-const generateFields = (
-  type: GraphQLInputType | GraphQLScalarType,
-  by?: string[]
-) => {
+const generateFields = (type: GraphQLInputType | GraphQLScalarType, by?: string[]) => {
   const filterKeys: string[] = [];
   const fields: ObjMap<GraphQLInputFieldConfig> = {};
 
   if (by && by?.length !== 0) {
     by.forEach((arg) => {
       argsFilterMap.get(arg)?.forEach((filterKey) => {
-        const isFilterKeyTypeAlreadyCreated = filterKeys.findIndex(
-          (key) => key === filterKey
-        );
+        const isFilterKeyTypeAlreadyCreated = filterKeys.findIndex((key) => key === filterKey);
 
         // if already created
         if (isFilterKeyTypeAlreadyCreated !== -1) {
@@ -62,9 +57,7 @@ const generateFields = (
     return fields;
   }
 
-  typeFilterMap
-    .get(getNamedType(type).name)
-    ?.map((filterName) => (fields[filterName] = { type: type }));
+  typeFilterMap.get(getNamedType(type).name)?.map((filterName) => (fields[filterName] = { type: type }));
 
   return fields;
 };
@@ -81,17 +74,11 @@ class FilterType extends GraphQLInputObjectType {
   }
 }
 
-const searchFilterTypes: Map<string | string[] | undefined, GraphQLInputType> =
-  new Map();
+const searchFilterTypes: Map<string | string[] | undefined, GraphQLInputType> = new Map();
 
-const getFilterType = (
-  type: GraphQLInputType | GraphQLScalarType,
-  by?: string[]
-) => {
+const getFilterType = (type: GraphQLInputType | GraphQLScalarType, by?: string[]) => {
   if (by && by?.length === 0) {
-    const searchFilterByTypeName = searchFilterTypes.get(
-      getNamedType(type).name
-    );
+    const searchFilterByTypeName = searchFilterTypes.get(getNamedType(type).name);
 
     if (!searchFilterByTypeName) {
       const newType = new FilterType(type);
@@ -117,13 +104,11 @@ const getFilterType = (
 };
 
 const searchDirective: CustomDirective = (directiveName = 'search') => {
-  function wrapType<
-    F extends GraphQLFieldConfig<any, any> | GraphQLInputFieldConfig
-  >(fieldConfig: F, by?: string[]): void {
-    if (
-      isNonNullType(fieldConfig.type) &&
-      isScalarType(fieldConfig.type.ofType)
-    ) {
+  function wrapType<F extends GraphQLFieldConfig<any, any> | GraphQLInputFieldConfig>(
+    fieldConfig: F,
+    by?: string[]
+  ): void {
+    if (isNonNullType(fieldConfig.type) && isScalarType(fieldConfig.type.ofType)) {
       fieldConfig.type = getFilterType(fieldConfig.type.ofType, by);
     } else if (isScalarType(fieldConfig.type)) {
       fieldConfig.type = getFilterType(fieldConfig.type, by);
@@ -146,11 +131,7 @@ const searchDirective: CustomDirective = (directiveName = 'search') => {
     directiveTransformer: (schema: GraphQLSchema) =>
       mapSchema(schema, {
         [MapperKind.INPUT_OBJECT_FIELD]: (fieldConfig) => {
-          const searchDirective = getDirective(
-            schema,
-            fieldConfig,
-            directiveName
-          )?.[0];
+          const searchDirective = getDirective(schema, fieldConfig, directiveName)?.[0];
 
           // console.log('----------===>', fieldConfig.type);
 
@@ -159,15 +140,11 @@ const searchDirective: CustomDirective = (directiveName = 'search') => {
             // if search directive has argument and Scalar type is not String
             // then throw error
             if (
-              [...typeFilterMap.keys()].includes(
-                getNamedType(fieldConfig.type).name
-              ) &&
+              [...typeFilterMap.keys()].includes(getNamedType(fieldConfig.type).name) &&
               Object.keys(searchDirective).length > 0
             ) {
               throw new GraphQLError(
-                `Scalar type ${[
-                  ...typeFilterMap.keys()
-                ]} can not have **by** argument.`
+                `Scalar type ${[...typeFilterMap.keys()]} can not have **by** argument.`
               );
             }
 

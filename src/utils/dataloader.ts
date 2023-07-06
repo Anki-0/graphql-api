@@ -24,11 +24,7 @@ function addHashes<K, F>(keyAndFields: KeyAndFields<K, F>) {
  * A Dataloader that will batch the loading of data for same set of fields.
  * Requires sortIdKey to be passed to help it find the values to be sorted against
  */
-export const createFieldLoader = <
-  V,
-  F extends keyof V,
-  K extends KeyType = string
->(
+export const createFieldLoader = <V, F extends keyof V, K extends KeyType = string>(
   batchLoadFn: (keys: K[], fields?: F[]) => Promise<V[]>,
   sortIdKey: keyof V
 ) => {

@@ -29,10 +29,7 @@ const CreateFilePathMap = (graphqlScalarsFiles: string[], __path: string) => {
         isUppercase(file.slice(0, 1)) &&
         file.slice(-3) === `.${EXT}`
       ) {
-        FilePathMap.set(
-          file,
-          path.relative(__dirname, filePath).replaceAll('\\', '/')
-        );
+        FilePathMap.set(file, path.relative(__dirname, filePath).replaceAll('\\', '/'));
       }
     }
 
