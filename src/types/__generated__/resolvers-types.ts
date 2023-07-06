@@ -49,6 +49,7 @@ export type FindPostByInput = {
   id?: InputMaybe<Scalars['String']['input']>;
   image?: InputMaybe<Scalars['String']['input']>;
   publishedBy?: InputMaybe<Scalars['String']['input']>;
+  slug?: InputMaybe<Scalars['String']['input']>;
   status?: InputMaybe<PostStatus>;
   title?: InputMaybe<Scalars['String']['input']>;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
@@ -143,6 +144,7 @@ export type Post = {
   image?: Maybe<Scalars['String']['output']>;
   modifiedBy?: Maybe<Scalars['String']['output']>;
   publishedBy: User;
+  slug: Scalars['String']['output'];
   status: Scalars['String']['output'];
   subTitle?: Maybe<Scalars['String']['output']>;
   tags?: Maybe<Array<Maybe<Tag>>>;
@@ -293,7 +295,7 @@ export type User = {
   id: Scalars['ID']['output'];
   image?: Maybe<Scalars['String']['output']>;
   name?: Maybe<Scalars['String']['output']>;
-  phone_number?: Maybe<Scalars['Int']['output']>;
+  phone_number?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
   user_role: Scalars['String']['output'];
   user_token?: Maybe<Scalars['String']['output']>;
@@ -564,6 +566,7 @@ export type PostResolvers<ContextType = Context, ParentType extends ResolversPar
   image?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   modifiedBy?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   publishedBy?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  slug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   status?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   subTitle?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   tags?: Resolver<Maybe<Array<Maybe<ResolversTypes['Tag']>>>, ParentType, ContextType>;
@@ -652,7 +655,7 @@ export type UserResolvers<ContextType = Context, ParentType extends ResolversPar
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   image?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  phone_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  phone_number?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   user_role?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   user_token?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;

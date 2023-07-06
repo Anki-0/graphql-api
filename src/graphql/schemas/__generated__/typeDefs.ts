@@ -187,6 +187,7 @@ enum PostStatus {
   type Post {
     id: ID!
     title: String!
+    slug: String!
     subTitle: String
     status: String!
     publishedBy: User!
@@ -217,6 +218,7 @@ enum PostStatus {
     _or: [FindPostByInput!]
     id: String @search(by: [exact, fulltext, hash])
     title: String @search(by: [exact])
+    slug: String @search(by: [exact])
     publishedBy: String
     status: PostStatus = published
     image: String
@@ -296,7 +298,7 @@ type User {
   name: String
   image: String
   address: String
-  phone_number: Int
+  phone_number: String
   bio: String
   user_token: String
   birthdate: DateTime

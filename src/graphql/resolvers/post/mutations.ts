@@ -1,8 +1,5 @@
 import { GraphQLError } from 'graphql';
-import {
-  MutationResolvers,
-  Post
-} from '../../../types/__generated__/resolvers-types.js';
+import { MutationResolvers, Post } from '../../../types/__generated__/resolvers-types.js';
 import { parseJSON } from 'date-fns';
 import { QueryTypes } from 'sequelize';
 import { DELETE_POST_WITH_ID } from '../../../lib/postsQueries.js';
@@ -11,7 +8,7 @@ import { DELETE_POST_WITH_ID } from '../../../lib/postsQueries.js';
 const auth = {
   isUserLogged: true,
   currentUser: {
-    id: 'e7dfc7a3-5dc2-4c96-aea9-9625280ba00d',
+    id: '007ceee9-e603-4392-b2da-b10b532921e7',
     role: 'admin'
   }
 };
@@ -29,6 +26,7 @@ export const PostMutations: MutationResolvers = {
 
     const CreatedPost = await db.post.create({
       title: input.title,
+      slug: '',
       'sub-title': input.subTitle as string,
       content: input.content as string,
       image: input.image as string,

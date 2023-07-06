@@ -10,12 +10,11 @@ import { DataTypes } from '../../utils/type.js';
 
 import { User } from './user.model.js';
 import { parseJSON } from 'date-fns';
+import slugify from '../../lib/slugify/index.js';
 
-export class Post extends Model<
-  InferAttributes<Post>,
-  InferCreationAttributes<Post>
-> {
+export class Post extends Model<InferAttributes<Post>, InferCreationAttributes<Post>> {
   declare id: CreationOptional<string>;
+  declare slug: string;
   declare title: string;
   declare 'sub-title': string;
   declare content: string;
@@ -36,9 +35,7 @@ export class Post extends Model<
     // define association here
     Post.belongsTo(models.user, {
       foreignKey: 'publishedBy',
-      targetKey: 'id',
-      onDelete: 'CASCADE',
-      onUpdate: 'CASCADE'
+      targetKey: 'id'
     });
 
     Post.hasMany(models.comment, {
@@ -71,8 +68,13 @@ export default (sequelize: Sequelize, DataTypes: DataTypes) => {
         allowNull: false,
         unique: true
       },
+      slug: {
+        type: DataTypes.STRING(255),
+        unique: true,
+        allowNull: false
+      },
       'sub-title': {
-        type: DataTypes.STRING(140),
+        type: DataTypes.STRING(255),
         allowNull: true,
         defaultValue: '',
         validate: {
@@ -80,7 +82,7 @@ export default (sequelize: Sequelize, DataTypes: DataTypes) => {
         }
       },
       title: {
-        type: DataTypes.STRING(140),
+        type: DataTypes.STRING(255),
         allowNull: false,
         validate: {
           min: 0,
@@ -98,8 +100,7 @@ export default (sequelize: Sequelize, DataTypes: DataTypes) => {
         defaultValue: '',
         validate: {
           vaidateImage(URL: string) {
-            const regex =
-              /^https?:\/\/.*\/.*\.(png|gif|webp|jpeg|jpg)\??.*$/gim;
+            const regex = /^https?:\/\/.*\/.*\.(png|gif|webp|jpeg|jpg)\??.*$/gim;
 
             if (!URL.match(regex)) {
               throw new Error('Image URL is Valid!!.');
@@ -118,7 +119,14 @@ export default (sequelize: Sequelize, DataTypes: DataTypes) => {
         defaultValue: 'published',
         allowNull: false
       },
-      publishedBy: { type: DataTypes.UUID, allowNull: false },
+      publishedBy: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: {
+          model: 'users',
+          key: 'id'
+        }
+      },
       modifiedBy: { type: DataTypes.UUID, allowNull: true },
       createdAt: {
         type: DataTypes.DATE,
@@ -138,6 +146,7 @@ export default (sequelize: Sequelize, DataTypes: DataTypes) => {
           }
           if (post.title) {
             post.title = post.title.trim();
+            post.slug = slugify(post.title, { lower: true, strict: true });
           }
           if (post['sub-title']) {
             post['sub-title'] = post['sub-title'].trim();

@@ -7,7 +7,7 @@ type User {
   name: String
   image: String
   address: String
-  phone_number: Int
+  phone_number: String
   bio: String
   user_token: String
   birthdate: DateTime
