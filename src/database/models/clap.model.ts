@@ -10,10 +10,7 @@ import { DataTypes } from '../../utils/type.js';
 import { User } from './user.model.js';
 import { Post } from './post.model.js';
 
-export class Claps extends Model<
-  InferAttributes<Claps>,
-  InferCreationAttributes<Claps>
-> {
+export class Claps extends Model<InferAttributes<Claps>, InferCreationAttributes<Claps>> {
   declare id: CreationOptional<string>;
   declare post_id: ForeignKey<Post['id']>;
   declare clappedBy: ForeignKey<User['id']>;

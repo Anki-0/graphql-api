@@ -1,5 +1,5 @@
 import { highlight } from 'cli-highlight';
-import { Sequelize, DataTypes, Op, type Dialect } from 'sequelize';
+import { Sequelize, DataTypes, type Dialect } from 'sequelize';
 
 import config from '../config/database-config.js';
 import { __DEV__ } from '../utils/assertions.js';
@@ -38,10 +38,7 @@ if (__DEV__) {
   });
 }
 
-let db = {
-  Op: Op,
-  sequelize: sequelize,
-  Sequelize: Sequelize,
+const models = {
   user: userModel(sequelize, DataTypes),
   account: accountModel(sequelize, DataTypes),
   clap: clapModel(sequelize, DataTypes),
@@ -54,11 +51,16 @@ let db = {
   verificationTokens: verificationTokenModel(sequelize, DataTypes)
 };
 
-Object.keys(db).forEach((modelName) => {
-  const name = modelName as keyof typeof db;
-  if (name !== 'Sequelize' && name !== 'sequelize' && name !== 'Op' && db[name].associate !== undefined) {
-    db[name].associate(db);
+Object.keys(models).forEach((modelName) => {
+  const name = modelName as keyof typeof models;
+  if (models[name].associate !== undefined) {
+    models[name].associate(models);
   }
 });
 
+let db = {
+  sequelize: sequelize,
+  Sequelize: Sequelize,
+  ...models
+};
 export default db;

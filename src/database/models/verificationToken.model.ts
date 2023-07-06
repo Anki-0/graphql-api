@@ -1,9 +1,4 @@
-import {
-  Model,
-  Sequelize,
-  InferAttributes,
-  InferCreationAttributes
-} from 'sequelize';
+import { Model, Sequelize, InferAttributes, InferCreationAttributes } from 'sequelize';
 import { DataTypes } from '../../utils/type.js';
 
 export class VerificationToken extends Model<

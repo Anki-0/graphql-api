@@ -9,10 +9,7 @@ import {
 import { DataTypes } from '../../utils/type.js';
 import { User } from './user.model.js';
 
-export class Account extends Model<
-  InferAttributes<Account>,
-  InferCreationAttributes<Account>
-> {
+export class Account extends Model<InferAttributes<Account>, InferCreationAttributes<Account>> {
   declare id?: CreationOptional<string>;
   declare user_id: ForeignKey<User['id']>;
   declare provider_type: string;
@@ -26,6 +23,7 @@ export class Account extends Model<
   declare id_token?: string;
   declare session_state?: string;
   declare status?: string;
+  declare password?: string;
 
   /**
    * Helper method for defining associations.
@@ -89,6 +87,10 @@ export default (sequelize: Sequelize, DataTypes: DataTypes) => {
       status: {
         type: DataTypes.STRING,
         allowNull: false
+      },
+      password: {
+        type: DataTypes.STRING,
+        allowNull: true
       }
     },
     {

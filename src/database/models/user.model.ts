@@ -1,17 +1,8 @@
-import {
-  Model,
-  Sequelize,
-  InferAttributes,
-  CreationOptional,
-  InferCreationAttributes
-} from 'sequelize';
+import { Model, Sequelize, InferAttributes, CreationOptional, InferCreationAttributes } from 'sequelize';
 
 import { DataTypes } from '../../utils/type.js';
 
-export class User extends Model<
-  InferAttributes<User>,
-  InferCreationAttributes<User>
-> {
+export class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   // [x: string]: any;
   declare id: CreationOptional<string>;
   declare username: string;
@@ -32,12 +23,13 @@ export class User extends Model<
   static associate(models: any) {
     User.hasMany(models.account, {
       foreignKey: 'user_id',
-      sourceKey: 'id'
+      sourceKey: 'id',
+      onDelete: 'CASCADE'
     });
     User.hasMany(models.post, {
       foreignKey: 'publishedBy',
       sourceKey: 'id',
-      onDelete: 'SET NULL',
+      onDelete: 'CASCADE',
       onUpdate: 'CASCADE'
     });
     User.belongsToMany(models.tag, {
@@ -57,7 +49,8 @@ export class User extends Model<
     });
     User.hasMany(models.clap, {
       foreignKey: 'clappedBy',
-      sourceKey: 'id'
+      sourceKey: 'id',
+      onDelete: 'SET NULL'
     });
   }
 }

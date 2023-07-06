@@ -1,16 +1,7 @@
-import {
-  Model,
-  Sequelize,
-  InferAttributes,
-  CreationOptional,
-  InferCreationAttributes
-} from 'sequelize';
+import { Model, Sequelize, InferAttributes, CreationOptional, InferCreationAttributes } from 'sequelize';
 import { DataTypes } from '../../utils/type.js';
 
-export class Tag extends Model<
-  InferAttributes<Tag>,
-  InferCreationAttributes<Tag>
-> {
+export class Tag extends Model<InferAttributes<Tag>, InferCreationAttributes<Tag>> {
   declare id: CreationOptional<string>;
   declare tag_name: string;
   declare createdAt: CreationOptional<Date>;

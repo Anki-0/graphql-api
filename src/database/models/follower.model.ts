@@ -9,10 +9,7 @@ import {
 import { DataTypes } from '../../utils/type.js';
 import { User } from './user.model.js';
 
-export class Follow extends Model<
-  InferAttributes<Follow>,
-  InferCreationAttributes<Follow>
-> {
+export class Follow extends Model<InferAttributes<Follow>, InferCreationAttributes<Follow>> {
   declare follower_id: ForeignKey<User['id']>;
   declare followee_id: ForeignKey<User['id']>;
   declare createdAt: CreationOptional<string>;

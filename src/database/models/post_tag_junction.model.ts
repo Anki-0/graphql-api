@@ -1,10 +1,4 @@
-import {
-  Model,
-  Sequelize,
-  ForeignKey,
-  InferAttributes,
-  InferCreationAttributes
-} from 'sequelize';
+import { Model, Sequelize, ForeignKey, InferAttributes, InferCreationAttributes } from 'sequelize';
 import { DataTypes } from '../../utils/type.js';
 import { Post } from './post.model.js';
 import { Tag } from './tags.model.js';

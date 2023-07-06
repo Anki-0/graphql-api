@@ -10,10 +10,7 @@ import { DataTypes } from '../../utils/type.js';
 import { User } from './user.model.js';
 import { Post } from './post.model.js';
 
-export class Comment extends Model<
-  InferAttributes<Comment>,
-  InferCreationAttributes<Comment>
-> {
+export class Comment extends Model<InferAttributes<Comment>, InferCreationAttributes<Comment>> {
   declare id: CreationOptional<string>;
   declare post_id: ForeignKey<Post['id']>;
   declare user_id: ForeignKey<User['id']>;
