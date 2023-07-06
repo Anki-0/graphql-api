@@ -13,12 +13,12 @@
   "author": "ankit",
   "license": "ISC",
   "scripts": {
-    "build": "tsc",
-    "start": "SET NODE_ENV=production && node ./dist/src/server.js",
-    "prod": "npm run build && npm run start",
     "dev": "SET NODE_ENV=development && nodemon --exec \"npx ts-node --esm\" ./src/server.ts",
-    "generate-typedefs": "\"npx ts-node --esm\" ./src/graphql/schemas/generateTypedefs.ts",
-    "codegen": "npm run generate-typedefs && graphql-codegen --config codegen.ts"
+    "clean": "rm -rf dist && mkdir dist",
+    "build": "SET NODE_ENV=production && npm run clean && tsc",
+    "start": "SET NODE_ENV=production && node dist/src/server.js",
+    "generateSchemas": "\"npx ts-node --esm\" ./src/lib/createGraphQLSchema.ts",
+    "codegen": "npm run generateSchemas && graphql-codegen --config codegen.ts"
   },
   "dependencies": {
     "@apollo/server": "^4.7.5",
