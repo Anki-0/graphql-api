@@ -2,7 +2,7 @@ import { highlight } from 'cli-highlight';
 import { Sequelize, DataTypes, type Dialect } from 'sequelize';
 
 import config from '../config/database-config.js';
-import { __DEV__ } from '../utils/assertions.js';
+import { __DEV__, __PRODUCTION__ } from '../utils/assertions.js';
 
 /**MODEL IMPORT */
 import {
@@ -19,6 +19,12 @@ import {
 } from './models/index.js';
 
 let sequelize: Sequelize;
+
+if (__DEV__ === undefined || __PRODUCTION__ === undefined) {
+  throw Error(
+    'The application encountered an error while attempting to access the NODE_ENV environment variable. The variable is either not set or not accessible within the current context.'
+  );
+}
 
 if (__DEV__) {
   const { database, username, password, host, dialect } = config['development'];
@@ -38,7 +44,9 @@ if (__DEV__) {
   });
 }
 
-const models = {
+const db = {
+  sequelize: sequelize,
+  Sequelize: Sequelize,
   user: userModel(sequelize, DataTypes),
   account: accountModel(sequelize, DataTypes),
   clap: clapModel(sequelize, DataTypes),
@@ -51,16 +59,14 @@ const models = {
   verificationTokens: verificationTokenModel(sequelize, DataTypes)
 };
 
-Object.keys(models).forEach((modelName) => {
-  const name = modelName as keyof typeof models;
-  if (models[name].associate !== undefined) {
-    models[name].associate(models);
+Object.keys(db).forEach((modelName) => {
+  if (modelName === 'sequelize' || modelName === 'Sequelize') {
+    return;
+  }
+
+  if (db[modelName as keyof Omit<typeof db, 'sequelize' | 'Sequelize'>].associate !== undefined) {
+    db[modelName as keyof Omit<typeof db, 'sequelize' | 'Sequelize'>].associate(db);
   }
 });
 
-let db = {
-  sequelize: sequelize,
-  Sequelize: Sequelize,
-  ...models
-};
 export default db;
