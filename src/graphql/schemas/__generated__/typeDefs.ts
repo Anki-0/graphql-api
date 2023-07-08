@@ -1,117 +1,121 @@
-import { gql } from 'graphql-tag';
-export default gql`
-  #graphql
-  #graphql
+import {gql} from 'graphql-tag'; export default gql`#graphql
+ #graphql
 
-  directive @date(defaultFormat: String = "dd/MM/yyyy") on FIELD_DEFINITION
+                      directive @date(
+                      defaultFormat: String = "dd/MM/yyyy"
+                      ) on FIELD_DEFINITION
+    
+#graphql
 
-  #graphql
+    enum SearchFilterArgs {
+      hash
+      exact
+      regexp
+      term
+      fulltext
+    }
+    directive @search(by: [SearchFilterArgs!]) on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
+    
+#graphql
 
-  enum SearchFilterArgs {
-    hash
-    exact
-    regexp
-    term
-    fulltext
-  }
-  directive @search(by: [SearchFilterArgs!]) on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
+                      directive @date(
+                      defaultFormat: String = "dd/MM/yyyy"
+                      ) on FIELD_DEFINITION
+    
+#graphql
 
-  #graphql
+    enum SearchFilterArgs {
+      hash
+      exact
+      regexp
+      term
+      fulltext
+    }
+    directive @search(by: [SearchFilterArgs!]) on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
+    
+#graphql
+ scalar EmailAddress
+#graphql
+ scalar DateTime 
+#graphql
 
-  directive @date(defaultFormat: String = "dd/MM/yyyy") on FIELD_DEFINITION
 
-  #graphql
 
-  enum SearchFilterArgs {
-    hash
-    exact
-    regexp
-    term
-    fulltext
-  }
-  directive @search(by: [SearchFilterArgs!]) on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
+#####################################################
+####################  Auth types.  ##################
+#####################################################
 
-  #graphql
-  scalar EmailAddress
-  #graphql
-  scalar DateTime
-  #graphql
+interface Error {
+  message: String!
+}
 
-  #####################################################
-  ####################  Auth types.  ##################
-  #####################################################
+enum Operation {
+  register
+  login
+}
 
-  interface Error {
-    message: String!
-  }
+#####################################################
+##############  Auth Input types.  ##################
+#####################################################
+input SignupInput {
+  email: EmailAddress!
+}
 
-  enum Operation {
-    register
-    login
-  }
+input SigninInput {
+  email: EmailAddress!
+}
 
-  #####################################################
-  ##############  Auth Input types.  ##################
-  #####################################################
-  input SignupInput {
-    email: EmailAddress!
-  }
+input VerifyTokenInput {
+  token: String!
+  operation: Operation!
+}
 
-  input SigninInput {
-    email: EmailAddress!
-  }
+input CreateAccountInput {
+  token: String
+  operation: Operation!
+  username: String!
+}
 
-  input VerifyTokenInput {
-    token: String!
-    operation: Operation!
-  }
+#####################################################
+############  Auth Response types.  #################
+#####################################################
 
-  input CreateAccountInput {
-    token: String
-    operation: Operation!
-    username: String!
-  }
+type SingupResponse {
+  success: SignupSuccess
+  error: SignupError
+}
 
-  #####################################################
-  ############  Auth Response types.  #################
-  #####################################################
+type SignupSuccess {
+  message: String!
+  link: String
+}
+type SignupError implements Error {
+  message: String!
+}
 
-  type SingupResponse {
-    success: SignupSuccess
-    error: SignupError
-  }
+type SigninResponse {
+  success: SingninSuccess
+  error: SigninError
+}
 
-  type SignupSuccess {
-    message: String!
-    link: String
-  }
-  type SignupError implements Error {
-    message: String!
-  }
+type SigninError implements Error {
+  message: String!
+}
 
-  type SigninResponse {
-    success: SingninSuccess
-    error: SigninError
-  }
+type SingninSuccess {
+  message: String!
+}
 
-  type SigninError implements Error {
-    message: String!
-  }
+type VerifyTokenResponse {
+  verified: Boolean!
+  message: String!
+}
 
-  type SingninSuccess {
-    message: String!
-  }
+type CreateAccountResponse {
+  accountCreated: Boolean!
+}
 
-  type VerifyTokenResponse {
-    verified: Boolean!
-    message: String!
-  }
-
-  type CreateAccountResponse {
-    accountCreated: Boolean!
-  }
-
-  #graphql
+#graphql
   # Comments in GraphQL strings (such as this one) start with the hash (#) symbol.
 
   # This "Book" type defines the queryable fields for every book in our data source.
@@ -126,58 +130,61 @@ export default gql`
   type Query {
     books: [Book]
   }
-  #graphql
+#graphql
 
-  #####################################################
-  ###################  Common types.  #################
-  #####################################################
 
-  input PaginationInput {
+#####################################################
+###################  Common types.  #################
+#####################################################
+
+input PaginationInput {
     offset: Int
     limit: Int
   }
-
+  
   type PaginationResponse {
     hasNextPage: Boolean
     hasPrevPage: Boolean
   }
+  
+#graphql
+########################################################################
+##  This file hold our Root Definitions (read as Query and Mutation)  ##
+########################################################################
 
-  #graphql
-  ########################################################################
-  ##  This file hold our Root Definitions (read as Query and Mutation)  ##
-  ########################################################################
+type Query {
+  #Users
+  users(input: UserFilterInput): [User]!
 
-  type Query {
-    #Users
-    users(input: UserFilterInput): [User]!
+  #Post
+  posts(input: PostFilterInput, pagination: PaginationInput): PostsResponse
 
-    #Post
-    posts(input: PostFilterInput, pagination: PaginationInput): PostsResponse
+  # TAGS
+  tags(input: TagsFilterInput, pagination: PaginationInput): [Tag]!
+  popularTags(pagination:PaginationInput):[PopularTagsResponse]!
+}
 
-    # TAGS
-    tags(input: TagsFilterInput): [Tag]!
-  }
+type Mutation {
+  # Auth
+  emailSignup(input: SignupInput!): SingupResponse!
+  signIn(input: SigninInput!): SigninResponse!
+  verifyToken(input: VerifyTokenInput!): VerifyTokenResponse!
+  createAccount(input: CreateAccountInput!): CreateAccountResponse!
 
-  type Mutation {
-    # Auth
-    emailSignup(input: SignupInput!): SingupResponse!
-    signIn(input: SigninInput!): SigninResponse!
-    verifyToken(input: VerifyTokenInput!): VerifyTokenResponse!
-    createAccount(input: CreateAccountInput!): CreateAccountResponse!
+  #Post
+  createPost(input: PostCreationInput!): Post!
+  deletePost(input: PostDeletionArgs!): PostDeletionRespose!
+}
 
-    #Post
-    createPost(input: PostCreationInput!): Post!
-    deletePost(input: PostDeletionArgs!): PostDeletionRespose!
-  }
 
-  #graphql
+#graphql
 
-  enum PostStatus {
+enum PostStatus {
     published
     draft
     private
   }
-
+  
   type Post {
     id: ID!
     title: String!
@@ -193,21 +200,21 @@ export default gql`
     createdAt: DateTime! @date
     updatedAt: DateTime @date
   }
-
+  
   #####################################################
   ##########  Users Filter Input types.  ##############
   #####################################################
-
+  
   enum sortFilter {
     DESC
     ASC
   }
-
+  
   input orderByFilter {
     createdAt: sortFilter
     updatedAt: sortFilter
   }
-
+  
   input FindPostByInput {
     _or: [FindPostByInput!]
     id: String @search(by: [exact, fulltext, hash])
@@ -219,17 +226,17 @@ export default gql`
     content: String
     createdAt: DateTime @search
     updatedAt: DateTime @search
-
+  
     _and: [FindPostByInput!]
     _not: [FindPostByInput!]
   }
-
+  
   input PostFilterInput {
     where: FindPostByInput
     orderBy: orderByFilter
     # paginate: PaginationInput
   }
-
+  
   input PostCreationInput {
     title: String!
     subTitle: String
@@ -240,99 +247,112 @@ export default gql`
     tags: [String]
   }
 
-  input PostDeletionArgs {
-    postId: ID!
-  }
-
+  input PostDeletionArgs{
+    postId:ID!
+  } 
+  
   #####################################################
   #############  Users Query Responses.  ##############
   #####################################################
-
+  
   type PostsResponse {
     data: [Post]!
     pagination: PaginationResponse
   }
 
-  type PostDeletionRespose {
-    success: PostDeleteSuccess
-    error: PostDeleteError
+  type PostDeletionRespose{
+    success:PostDeleteSuccess
+    error:PostDeleteError
   }
 
-  type PostDeleteSuccess {
-    message: String!
+  type PostDeleteSuccess{
+    message:String!
   }
-  type PostDeleteError {
-    message: String!
+  type PostDeleteError{
+    message:String!
   }
+  
+#graphql
+type Tag {
+  id: ID
+  tag_name: String
+  count: Int
+  createdAt: String @date
+  updatedAt: String @date
+}
 
-  #graphql
-  type Tag {
-    id: ID
-    tag_name: String
-    createdAt: String
-    updatedAt: String
-  }
+type PopularTagsResponse{
+  id: ID
+  tag_name: String
+  count: Int
+  createdAt: String @date
+  updatedAt: String @date
+}
 
-  input FindTagsByInput {
-    postId: String
-    userId: String
-  }
+input FindTagsByInput {
+  userid: String,
+  username: String,
+  tagname: String,
+  id:ID
+}
 
-  input TagsFilterInput {
-    where: FindTagsByInput
-  }
+input TagsFilterInput {
+  where: FindTagsByInput
+}
 
-  #graphql
-  type User {
-    id: ID!
-    username: String! @search
-    email: String!
-    user_role: String!
-    name: String
-    image: String
-    address: String
-    phone_number: String
-    bio: String
-    user_token: String
-    birthdate: DateTime
-    email_verified: DateTime
-    user_token_expat: DateTime
-    createdAt: DateTime! @date
-    updatedAt: DateTime @date
-  }
 
-  enum UserAccountStatus {
-    PENDING
-    ACTIVE
-    SUSPENDED
-  }
+#graphql
+type User {
+  id: ID!
+  username: String! @search
+  email: String!
+  user_role: String!
+  name: String
+  image: String
+  address: String
+  phone_number: String
+  bio: String
+  user_token: String
+  birthdate: DateTime
+  email_verified: DateTime
+  user_token_expat: DateTime
+  createdAt: DateTime! @date
+  updatedAt: DateTime @date
+}
 
-  enum UserRoles {
-    admin
-    client
-  }
+enum UserAccountStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+}
 
-  input FindUserByInput {
-    id: String @search(by: [exact])
-    name: String
-    username: String @search(by: [exact])
-    email_verified: DateTime
-    email: String @search(by: [exact])
-    image: String
-    birthdate: DateTime
-    phone_number: Int
-    bio: String
-    user_role: UserRoles
-    account_status: UserAccountStatus
-    createdAt: DateTime
-    updatedAt: DateTime
+enum UserRoles {
+  admin
+  client
+}
 
-    _or: [FindUserByInput!]
-    _and: [FindUserByInput!]
-    _not: [FindUserByInput!]
-  }
+input FindUserByInput {
+  id: String @search(by: [exact])
+  name: String
+  username: String @search(by: [exact])
+  email_verified: DateTime
+  email: String @search(by: [exact])
+  image: String
+  birthdate: DateTime
+  phone_number: Int
+  bio: String
+  user_role: UserRoles
+  account_status: UserAccountStatus
+  createdAt: DateTime
+  updatedAt: DateTime
 
-  input UserFilterInput {
-    where: FindUserByInput
-  }
-`;
+  _or: [FindUserByInput!]
+  _and: [FindUserByInput!]
+  _not: [FindUserByInput!]
+}
+
+input UserFilterInput {
+  where: FindUserByInput
+}
+
+`

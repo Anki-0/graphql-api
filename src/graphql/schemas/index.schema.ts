@@ -11,7 +11,8 @@ type Query {
   posts(input: PostFilterInput, pagination: PaginationInput): PostsResponse
 
   # TAGS
-  tags(input: TagsFilterInput): [Tag]!
+  tags(input: TagsFilterInput, pagination: PaginationInput): [Tag]!
+  popularTags(pagination:PaginationInput):[PopularTagsResponse]!
 }
 
 type Mutation {

@@ -6,19 +6,17 @@ export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K]
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
-export type Incremental<T> =
-  | T
-  | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
+export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 export type RequireFields<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: { input: string; output: string };
-  String: { input: string; output: string };
-  Boolean: { input: boolean; output: boolean };
-  Int: { input: number; output: number };
-  Float: { input: number; output: number };
-  DateTime: { input: Date | null; output: Date | null };
-  EmailAddress: { input: any; output: any };
+  ID: { input: string; output: string; }
+  String: { input: string; output: string; }
+  Boolean: { input: boolean; output: boolean; }
+  Int: { input: number; output: number; }
+  Float: { input: number; output: number; }
+  DateTime: { input: Date | null; output: Date | null; }
+  EmailAddress: { input: any; output: any; }
 };
 
 export type Book = {
@@ -58,8 +56,10 @@ export type FindPostByInput = {
 };
 
 export type FindTagsByInput = {
-  postId?: InputMaybe<Scalars['String']['input']>;
-  userId?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['ID']['input']>;
+  tagname?: InputMaybe<Scalars['String']['input']>;
+  userid?: InputMaybe<Scalars['String']['input']>;
+  username?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type FindUserByInput = {
@@ -91,25 +91,31 @@ export type Mutation = {
   verifyToken: VerifyTokenResponse;
 };
 
+
 export type MutationCreateAccountArgs = {
   input: CreateAccountInput;
 };
+
 
 export type MutationCreatePostArgs = {
   input: PostCreationInput;
 };
 
+
 export type MutationDeletePostArgs = {
   input: PostDeletionArgs;
 };
+
 
 export type MutationEmailSignupArgs = {
   input: SignupInput;
 };
 
+
 export type MutationSignInArgs = {
   input: SigninInput;
 };
+
 
 export type MutationVerifyTokenArgs = {
   input: VerifyTokenInput;
@@ -129,6 +135,15 @@ export type PaginationResponse = {
   __typename?: 'PaginationResponse';
   hasNextPage?: Maybe<Scalars['Boolean']['output']>;
   hasPrevPage?: Maybe<Scalars['Boolean']['output']>;
+};
+
+export type PopularTagsResponse = {
+  __typename?: 'PopularTagsResponse';
+  count?: Maybe<Scalars['Int']['output']>;
+  createdAt?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['ID']['output']>;
+  tag_name?: Maybe<Scalars['String']['output']>;
+  updatedAt?: Maybe<Scalars['String']['output']>;
 };
 
 export type Post = {
@@ -198,19 +213,29 @@ export type PostsResponse = {
 export type Query = {
   __typename?: 'Query';
   books?: Maybe<Array<Maybe<Book>>>;
+  popularTags: Array<Maybe<PopularTagsResponse>>;
   posts?: Maybe<PostsResponse>;
   tags: Array<Maybe<Tag>>;
   users: Array<Maybe<User>>;
 };
+
+
+export type QueryPopularTagsArgs = {
+  pagination?: InputMaybe<PaginationInput>;
+};
+
 
 export type QueryPostsArgs = {
   input?: InputMaybe<PostFilterInput>;
   pagination?: InputMaybe<PaginationInput>;
 };
 
+
 export type QueryTagsArgs = {
   input?: InputMaybe<TagsFilterInput>;
+  pagination?: InputMaybe<PaginationInput>;
 };
+
 
 export type QueryUsersArgs = {
   input?: InputMaybe<UserFilterInput>;
@@ -267,6 +292,7 @@ export type SingupResponse = {
 
 export type Tag = {
   __typename?: 'Tag';
+  count?: Maybe<Scalars['Int']['output']>;
   createdAt?: Maybe<Scalars['String']['output']>;
   id?: Maybe<Scalars['ID']['output']>;
   tag_name?: Maybe<Scalars['String']['output']>;
@@ -337,12 +363,11 @@ export type ResolversObject<TObject> = WithIndex<TObject>;
 
 export type ResolverTypeWrapper<T> = Promise<T> | T;
 
+
 export type ResolverWithResolve<TResult, TParent, TContext, TArgs> = {
   resolve: ResolverFn<TResult, TParent, TContext, TArgs>;
 };
-export type Resolver<TResult, TParent = {}, TContext = {}, TArgs = {}> =
-  | ResolverFn<TResult, TParent, TContext, TArgs>
-  | ResolverWithResolve<TResult, TParent, TContext, TArgs>;
+export type Resolver<TResult, TParent = {}, TContext = {}, TArgs = {}> = ResolverFn<TResult, TParent, TContext, TArgs> | ResolverWithResolve<TResult, TParent, TContext, TArgs>;
 
 export type ResolverFn<TResult, TParent, TContext, TArgs> = (
   parent: TParent,
@@ -389,11 +414,7 @@ export type TypeResolveFn<TTypes, TParent = {}, TContext = {}> = (
   info: GraphQLResolveInfo
 ) => Maybe<TTypes> | Promise<Maybe<TTypes>>;
 
-export type IsTypeOfResolverFn<T = {}, TContext = {}> = (
-  obj: T,
-  context: TContext,
-  info: GraphQLResolveInfo
-) => boolean | Promise<boolean>;
+export type IsTypeOfResolverFn<T = {}, TContext = {}> = (obj: T, context: TContext, info: GraphQLResolveInfo) => boolean | Promise<boolean>;
 
 export type NextResolverFn<T> = () => Promise<T>;
 
@@ -405,9 +426,10 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
   info: GraphQLResolveInfo
 ) => TResult | Promise<TResult>;
 
+
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<RefType extends Record<string, unknown>> = ResolversObject<{
-  Error: SigninError | SignupError;
+  Error: ( SigninError ) | ( SignupError );
 }>;
 
 /** Mapping between all available schema types and the resolvers types */
@@ -428,6 +450,7 @@ export type ResolversTypes = ResolversObject<{
   Operation: Operation;
   PaginationInput: PaginationInput;
   PaginationResponse: ResolverTypeWrapper<PaginationResponse>;
+  PopularTagsResponse: ResolverTypeWrapper<PopularTagsResponse>;
   Post: ResolverTypeWrapper<Post>;
   PostCreationInput: PostCreationInput;
   PostDeleteError: ResolverTypeWrapper<PostDeleteError>;
@@ -477,6 +500,7 @@ export type ResolversParentTypes = ResolversObject<{
   Mutation: {};
   PaginationInput: PaginationInput;
   PaginationResponse: PaginationResponse;
+  PopularTagsResponse: PopularTagsResponse;
   Post: Post;
   PostCreationInput: PostCreationInput;
   PostDeleteError: PostDeleteError;
@@ -508,37 +532,21 @@ export type DateDirectiveArgs = {
   defaultFormat?: Maybe<Scalars['String']['input']>;
 };
 
-export type DateDirectiveResolver<
-  Result,
-  Parent,
-  ContextType = Context,
-  Args = DateDirectiveArgs
-> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+export type DateDirectiveResolver<Result, Parent, ContextType = Context, Args = DateDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
 export type SearchDirectiveArgs = {
   by?: Maybe<Array<SearchFilterArgs>>;
 };
 
-export type SearchDirectiveResolver<
-  Result,
-  Parent,
-  ContextType = Context,
-  Args = SearchDirectiveArgs
-> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+export type SearchDirectiveResolver<Result, Parent, ContextType = Context, Args = SearchDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
-export type BookResolvers<
-  ContextType = Context,
-  ParentType extends ResolversParentTypes['Book'] = ResolversParentTypes['Book']
-> = ResolversObject<{
+export type BookResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Book'] = ResolversParentTypes['Book']> = ResolversObject<{
   author?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type CreateAccountResponseResolvers<
-  ContextType = Context,
-  ParentType extends ResolversParentTypes['CreateAccountResponse'] = ResolversParentTypes['CreateAccountResponse']
-> = ResolversObject<{
+export type CreateAccountResponseResolvers<ContextType = Context, ParentType extends ResolversParentTypes['CreateAccountResponse'] = ResolversParentTypes['CreateAccountResponse']> = ResolversObject<{
   accountCreated?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -547,74 +555,40 @@ export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversT
   name: 'DateTime';
 }
 
-export interface EmailAddressScalarConfig
-  extends GraphQLScalarTypeConfig<ResolversTypes['EmailAddress'], any> {
+export interface EmailAddressScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['EmailAddress'], any> {
   name: 'EmailAddress';
 }
 
-export type ErrorResolvers<
-  ContextType = Context,
-  ParentType extends ResolversParentTypes['Error'] = ResolversParentTypes['Error']
-> = ResolversObject<{
+export type ErrorResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Error'] = ResolversParentTypes['Error']> = ResolversObject<{
   __resolveType: TypeResolveFn<'SigninError' | 'SignupError', ParentType, ContextType>;
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 }>;
 
-export type MutationResolvers<
-  ContextType = Context,
-  ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']
-> = ResolversObject<{
-  createAccount?: Resolver<
-    ResolversTypes['CreateAccountResponse'],
-    ParentType,
-    ContextType,
-    RequireFields<MutationCreateAccountArgs, 'input'>
-  >;
-  createPost?: Resolver<
-    ResolversTypes['Post'],
-    ParentType,
-    ContextType,
-    RequireFields<MutationCreatePostArgs, 'input'>
-  >;
-  deletePost?: Resolver<
-    ResolversTypes['PostDeletionRespose'],
-    ParentType,
-    ContextType,
-    RequireFields<MutationDeletePostArgs, 'input'>
-  >;
-  emailSignup?: Resolver<
-    ResolversTypes['SingupResponse'],
-    ParentType,
-    ContextType,
-    RequireFields<MutationEmailSignupArgs, 'input'>
-  >;
-  signIn?: Resolver<
-    ResolversTypes['SigninResponse'],
-    ParentType,
-    ContextType,
-    RequireFields<MutationSignInArgs, 'input'>
-  >;
-  verifyToken?: Resolver<
-    ResolversTypes['VerifyTokenResponse'],
-    ParentType,
-    ContextType,
-    RequireFields<MutationVerifyTokenArgs, 'input'>
-  >;
+export type MutationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
+  createAccount?: Resolver<ResolversTypes['CreateAccountResponse'], ParentType, ContextType, RequireFields<MutationCreateAccountArgs, 'input'>>;
+  createPost?: Resolver<ResolversTypes['Post'], ParentType, ContextType, RequireFields<MutationCreatePostArgs, 'input'>>;
+  deletePost?: Resolver<ResolversTypes['PostDeletionRespose'], ParentType, ContextType, RequireFields<MutationDeletePostArgs, 'input'>>;
+  emailSignup?: Resolver<ResolversTypes['SingupResponse'], ParentType, ContextType, RequireFields<MutationEmailSignupArgs, 'input'>>;
+  signIn?: Resolver<ResolversTypes['SigninResponse'], ParentType, ContextType, RequireFields<MutationSignInArgs, 'input'>>;
+  verifyToken?: Resolver<ResolversTypes['VerifyTokenResponse'], ParentType, ContextType, RequireFields<MutationVerifyTokenArgs, 'input'>>;
 }>;
 
-export type PaginationResponseResolvers<
-  ContextType = Context,
-  ParentType extends ResolversParentTypes['PaginationResponse'] = ResolversParentTypes['PaginationResponse']
-> = ResolversObject<{
+export type PaginationResponseResolvers<ContextType = Context, ParentType extends ResolversParentTypes['PaginationResponse'] = ResolversParentTypes['PaginationResponse']> = ResolversObject<{
   hasNextPage?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   hasPrevPage?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type PostResolvers<
-  ContextType = Context,
-  ParentType extends ResolversParentTypes['Post'] = ResolversParentTypes['Post']
-> = ResolversObject<{
+export type PopularTagsResponseResolvers<ContextType = Context, ParentType extends ResolversParentTypes['PopularTagsResponse'] = ResolversParentTypes['PopularTagsResponse']> = ResolversObject<{
+  count?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  createdAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  tag_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  updatedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PostResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Post'] = ResolversParentTypes['Post']> = ResolversObject<{
   banner?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   content?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
@@ -631,105 +605,71 @@ export type PostResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type PostDeleteErrorResolvers<
-  ContextType = Context,
-  ParentType extends ResolversParentTypes['PostDeleteError'] = ResolversParentTypes['PostDeleteError']
-> = ResolversObject<{
+export type PostDeleteErrorResolvers<ContextType = Context, ParentType extends ResolversParentTypes['PostDeleteError'] = ResolversParentTypes['PostDeleteError']> = ResolversObject<{
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type PostDeleteSuccessResolvers<
-  ContextType = Context,
-  ParentType extends ResolversParentTypes['PostDeleteSuccess'] = ResolversParentTypes['PostDeleteSuccess']
-> = ResolversObject<{
+export type PostDeleteSuccessResolvers<ContextType = Context, ParentType extends ResolversParentTypes['PostDeleteSuccess'] = ResolversParentTypes['PostDeleteSuccess']> = ResolversObject<{
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type PostDeletionResposeResolvers<
-  ContextType = Context,
-  ParentType extends ResolversParentTypes['PostDeletionRespose'] = ResolversParentTypes['PostDeletionRespose']
-> = ResolversObject<{
+export type PostDeletionResposeResolvers<ContextType = Context, ParentType extends ResolversParentTypes['PostDeletionRespose'] = ResolversParentTypes['PostDeletionRespose']> = ResolversObject<{
   error?: Resolver<Maybe<ResolversTypes['PostDeleteError']>, ParentType, ContextType>;
   success?: Resolver<Maybe<ResolversTypes['PostDeleteSuccess']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type PostsResponseResolvers<
-  ContextType = Context,
-  ParentType extends ResolversParentTypes['PostsResponse'] = ResolversParentTypes['PostsResponse']
-> = ResolversObject<{
+export type PostsResponseResolvers<ContextType = Context, ParentType extends ResolversParentTypes['PostsResponse'] = ResolversParentTypes['PostsResponse']> = ResolversObject<{
   data?: Resolver<Array<Maybe<ResolversTypes['Post']>>, ParentType, ContextType>;
   pagination?: Resolver<Maybe<ResolversTypes['PaginationResponse']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type QueryResolvers<
-  ContextType = Context,
-  ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']
-> = ResolversObject<{
+export type QueryResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   books?: Resolver<Maybe<Array<Maybe<ResolversTypes['Book']>>>, ParentType, ContextType>;
+  popularTags?: Resolver<Array<Maybe<ResolversTypes['PopularTagsResponse']>>, ParentType, ContextType, Partial<QueryPopularTagsArgs>>;
   posts?: Resolver<Maybe<ResolversTypes['PostsResponse']>, ParentType, ContextType, Partial<QueryPostsArgs>>;
   tags?: Resolver<Array<Maybe<ResolversTypes['Tag']>>, ParentType, ContextType, Partial<QueryTagsArgs>>;
   users?: Resolver<Array<Maybe<ResolversTypes['User']>>, ParentType, ContextType, Partial<QueryUsersArgs>>;
 }>;
 
-export type SigninErrorResolvers<
-  ContextType = Context,
-  ParentType extends ResolversParentTypes['SigninError'] = ResolversParentTypes['SigninError']
-> = ResolversObject<{
+export type SigninErrorResolvers<ContextType = Context, ParentType extends ResolversParentTypes['SigninError'] = ResolversParentTypes['SigninError']> = ResolversObject<{
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type SigninResponseResolvers<
-  ContextType = Context,
-  ParentType extends ResolversParentTypes['SigninResponse'] = ResolversParentTypes['SigninResponse']
-> = ResolversObject<{
+export type SigninResponseResolvers<ContextType = Context, ParentType extends ResolversParentTypes['SigninResponse'] = ResolversParentTypes['SigninResponse']> = ResolversObject<{
   error?: Resolver<Maybe<ResolversTypes['SigninError']>, ParentType, ContextType>;
   success?: Resolver<Maybe<ResolversTypes['SingninSuccess']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type SignupErrorResolvers<
-  ContextType = Context,
-  ParentType extends ResolversParentTypes['SignupError'] = ResolversParentTypes['SignupError']
-> = ResolversObject<{
+export type SignupErrorResolvers<ContextType = Context, ParentType extends ResolversParentTypes['SignupError'] = ResolversParentTypes['SignupError']> = ResolversObject<{
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type SignupSuccessResolvers<
-  ContextType = Context,
-  ParentType extends ResolversParentTypes['SignupSuccess'] = ResolversParentTypes['SignupSuccess']
-> = ResolversObject<{
+export type SignupSuccessResolvers<ContextType = Context, ParentType extends ResolversParentTypes['SignupSuccess'] = ResolversParentTypes['SignupSuccess']> = ResolversObject<{
   link?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type SingninSuccessResolvers<
-  ContextType = Context,
-  ParentType extends ResolversParentTypes['SingninSuccess'] = ResolversParentTypes['SingninSuccess']
-> = ResolversObject<{
+export type SingninSuccessResolvers<ContextType = Context, ParentType extends ResolversParentTypes['SingninSuccess'] = ResolversParentTypes['SingninSuccess']> = ResolversObject<{
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type SingupResponseResolvers<
-  ContextType = Context,
-  ParentType extends ResolversParentTypes['SingupResponse'] = ResolversParentTypes['SingupResponse']
-> = ResolversObject<{
+export type SingupResponseResolvers<ContextType = Context, ParentType extends ResolversParentTypes['SingupResponse'] = ResolversParentTypes['SingupResponse']> = ResolversObject<{
   error?: Resolver<Maybe<ResolversTypes['SignupError']>, ParentType, ContextType>;
   success?: Resolver<Maybe<ResolversTypes['SignupSuccess']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type TagResolvers<
-  ContextType = Context,
-  ParentType extends ResolversParentTypes['Tag'] = ResolversParentTypes['Tag']
-> = ResolversObject<{
+export type TagResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Tag'] = ResolversParentTypes['Tag']> = ResolversObject<{
+  count?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   tag_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -737,10 +677,7 @@ export type TagResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type UserResolvers<
-  ContextType = Context,
-  ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']
-> = ResolversObject<{
+export type UserResolvers<ContextType = Context, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = ResolversObject<{
   address?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   bio?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   birthdate?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
@@ -759,10 +696,7 @@ export type UserResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type VerifyTokenResponseResolvers<
-  ContextType = Context,
-  ParentType extends ResolversParentTypes['VerifyTokenResponse'] = ResolversParentTypes['VerifyTokenResponse']
-> = ResolversObject<{
+export type VerifyTokenResponseResolvers<ContextType = Context, ParentType extends ResolversParentTypes['VerifyTokenResponse'] = ResolversParentTypes['VerifyTokenResponse']> = ResolversObject<{
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   verified?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -776,6 +710,7 @@ export type Resolvers<ContextType = Context> = ResolversObject<{
   Error?: ErrorResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   PaginationResponse?: PaginationResponseResolvers<ContextType>;
+  PopularTagsResponse?: PopularTagsResponseResolvers<ContextType>;
   Post?: PostResolvers<ContextType>;
   PostDeleteError?: PostDeleteErrorResolvers<ContextType>;
   PostDeleteSuccess?: PostDeleteSuccessResolvers<ContextType>;
