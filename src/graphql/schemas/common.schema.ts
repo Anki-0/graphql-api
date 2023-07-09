@@ -1,18 +1,15 @@
-export default `#graphql
+export default /* GraphQL */ `
+  #####################################################
+  ###################  Common types.  #################
+  #####################################################
 
-
-#####################################################
-###################  Common types.  #################
-#####################################################
-
-input PaginationInput {
+  input PaginationInput {
     offset: Int
     limit: Int
   }
-  
+
   type PaginationResponse {
     hasNextPage: Boolean
     hasPrevPage: Boolean
   }
-  
 `;

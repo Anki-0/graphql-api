@@ -8,7 +8,7 @@ import { CustomDirective } from './types.js';
 // the specified name (we're using `upper`)
 const dateDirective: CustomDirective = (directiveName = 'date') => {
   return {
-    directiveTypeDef: `#graphql\n
+    directiveTypeDef: /* GraphQL */ `\n
                       directive @${directiveName}(
                       defaultFormat: String = "dd/MM/yyyy"
                       ) on FIELD_DEFINITION
@@ -18,7 +18,11 @@ const dateDirective: CustomDirective = (directiveName = 'date') => {
         // Executes once for each object field in the schema
         [MapperKind.OBJECT_FIELD]: (fieldConfig) => {
           // Check whether this field has the specified directive
-          const dateDirective = getDirective(schema, fieldConfig, directiveName)?.[0];
+          const dateDirective = getDirective(
+            schema,
+            fieldConfig,
+            directiveName
+          )?.[0];
 
           if (dateDirective) {
             const { resolve = defaultFieldResolver } = fieldConfig;
@@ -33,9 +37,16 @@ const dateDirective: CustomDirective = (directiveName = 'date') => {
             };
 
             fieldConfig.type = GraphQLString;
-            fieldConfig.resolve = async (source, { format, ...args }, context, info) => {
+            fieldConfig.resolve = async (
+              source,
+              { format, ...args },
+              context,
+              info
+            ) => {
               const newFormat: string = format || defaultFormat;
-              const date = <Date | number>await resolve(source, args, context, info);
+              const date = <Date | number>(
+                await resolve(source, args, context, info)
+              );
 
               return date ? formatDate(date, newFormat, {}) : date;
             };

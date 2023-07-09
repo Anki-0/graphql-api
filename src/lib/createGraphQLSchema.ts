@@ -27,7 +27,11 @@ typeDefs += await ScalarTypeDefs(typeDefs);
 
 for (const fileIndex in gqlFiles) {
   const __typedef: string = (
-    await import(pathToFileURL(path.join(__dirname, '../graphql/schemas', gqlFiles[fileIndex])).href)
+    await import(
+      pathToFileURL(
+        path.join(__dirname, '../graphql/schemas', gqlFiles[fileIndex])
+      ).href
+    )
   ).default;
 
   if (__typedef !== undefined) {
@@ -35,16 +39,21 @@ for (const fileIndex in gqlFiles) {
   }
 }
 
-const typeDefsWithGqlTag = "import {gql} from 'graphql-tag'; export default gql`#graphql\n [CODE]`".replace(
-  '[CODE]',
-  typeDefs
-);
+const typeDefsWithGqlTag =
+  "import {gql} from 'graphql-tag'; export default gql/* GraphQL */ `\n [CODE]`".replace(
+    '[CODE]',
+    typeDefs
+  );
 
 try {
-  writeFileSync(path.join(__dirname, '../graphql/schemas/__generated__', 'typeDefs.ts'), typeDefsWithGqlTag, {
-    encoding: 'utf8',
-    flag: 'w+'
-  });
+  writeFileSync(
+    path.join(__dirname, '../graphql/schemas/__generated__', 'typeDefs.ts'),
+    typeDefsWithGqlTag,
+    {
+      encoding: 'utf8',
+      flag: 'w+'
+    }
+  );
 } catch (error) {
   console.error('Error writting typedefs in /graphql/schemas/* -> ', error);
 }

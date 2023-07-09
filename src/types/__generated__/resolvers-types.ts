@@ -86,8 +86,8 @@ export type Mutation = {
   createAccount: CreateAccountResponse;
   createPost: Post;
   deletePost: PostDeletionRespose;
-  emailSignup: SingupResponse;
-  signIn: SigninResponse;
+  signin: SigninResponse;
+  signup: SingupResponse;
   verifyToken: VerifyTokenResponse;
 };
 
@@ -107,13 +107,13 @@ export type MutationDeletePostArgs = {
 };
 
 
-export type MutationEmailSignupArgs = {
-  input: SignupInput;
+export type MutationSigninArgs = {
+  input: SigninInput;
 };
 
 
-export type MutationSignInArgs = {
-  input: SigninInput;
+export type MutationSignupArgs = {
+  input: SignupInput;
 };
 
 
@@ -568,8 +568,8 @@ export type MutationResolvers<ContextType = Context, ParentType extends Resolver
   createAccount?: Resolver<ResolversTypes['CreateAccountResponse'], ParentType, ContextType, RequireFields<MutationCreateAccountArgs, 'input'>>;
   createPost?: Resolver<ResolversTypes['Post'], ParentType, ContextType, RequireFields<MutationCreatePostArgs, 'input'>>;
   deletePost?: Resolver<ResolversTypes['PostDeletionRespose'], ParentType, ContextType, RequireFields<MutationDeletePostArgs, 'input'>>;
-  emailSignup?: Resolver<ResolversTypes['SingupResponse'], ParentType, ContextType, RequireFields<MutationEmailSignupArgs, 'input'>>;
-  signIn?: Resolver<ResolversTypes['SigninResponse'], ParentType, ContextType, RequireFields<MutationSignInArgs, 'input'>>;
+  signin?: Resolver<ResolversTypes['SigninResponse'], ParentType, ContextType, RequireFields<MutationSigninArgs, 'input'>>;
+  signup?: Resolver<ResolversTypes['SingupResponse'], ParentType, ContextType, RequireFields<MutationSignupArgs, 'input'>>;
   verifyToken?: Resolver<ResolversTypes['VerifyTokenResponse'], ParentType, ContextType, RequireFields<MutationVerifyTokenArgs, 'input'>>;
 }>;
 

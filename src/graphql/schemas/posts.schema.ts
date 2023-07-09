@@ -1,11 +1,10 @@
-export default `#graphql
-
-enum PostStatus {
+export default /* GraphQL */ `
+  enum PostStatus {
     published
     draft
     private
   }
-  
+
   type Post {
     id: ID!
     title: String!
@@ -21,21 +20,21 @@ enum PostStatus {
     createdAt: DateTime! @date
     updatedAt: DateTime @date
   }
-  
+
   #####################################################
   ##########  Users Filter Input types.  ##############
   #####################################################
-  
+
   enum sortFilter {
     DESC
     ASC
   }
-  
+
   input orderByFilter {
     createdAt: sortFilter
     updatedAt: sortFilter
   }
-  
+
   input FindPostByInput {
     _or: [FindPostByInput!]
     id: String @search(by: [exact, fulltext, hash])
@@ -47,17 +46,17 @@ enum PostStatus {
     content: String
     createdAt: DateTime @search
     updatedAt: DateTime @search
-  
+
     _and: [FindPostByInput!]
     _not: [FindPostByInput!]
   }
-  
+
   input PostFilterInput {
     where: FindPostByInput
     orderBy: orderByFilter
     # paginate: PaginationInput
   }
-  
+
   input PostCreationInput {
     title: String!
     subTitle: String
@@ -68,29 +67,28 @@ enum PostStatus {
     tags: [String]
   }
 
-  input PostDeletionArgs{
-    postId:ID!
-  } 
-  
+  input PostDeletionArgs {
+    postId: ID!
+  }
+
   #####################################################
   #############  Users Query Responses.  ##############
   #####################################################
-  
+
   type PostsResponse {
     data: [Post]!
     pagination: PaginationResponse
   }
 
-  type PostDeletionRespose{
-    success:PostDeleteSuccess
-    error:PostDeleteError
+  type PostDeletionRespose {
+    success: PostDeleteSuccess
+    error: PostDeleteError
   }
 
-  type PostDeleteSuccess{
-    message:String!
+  type PostDeleteSuccess {
+    message: String!
   }
-  type PostDeleteError{
-    message:String!
+  type PostDeleteError {
+    message: String!
   }
-  
 `;

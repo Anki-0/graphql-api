@@ -23,7 +23,7 @@ const validate = (value: any, ast?: ASTNode): string => {
 const emailScalar: CustomScalar = (scalarName = 'EmailAddress') => {
   return {
     id: `${scalarName}`,
-    scalarTypeDef: `#graphql\n scalar ${scalarName}\n`,
+    scalarTypeDef: /* GraphQL */ `\n scalar ${scalarName}\n`,
     graphqlScalarType: new GraphQLScalarType({
       name: `${scalarName}`,
       description: `The ${scalarName} scalar type represents an email address as specified by [RFC1123](https://html.spec.whatwg.org/multipage/input.html#valid-e-mail-address).`,

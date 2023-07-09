@@ -1,79 +1,75 @@
-export default `#graphql
+export default /* GraphQL */ `
+  #####################################################
+  ####################  Auth types.  ##################
+  #####################################################
 
+  interface Error {
+    message: String!
+  }
 
+  enum Operation {
+    register
+    login
+  }
 
-#####################################################
-####################  Auth types.  ##################
-#####################################################
+  #####################################################
+  ##############  Auth Input types.  ##################
+  #####################################################
+  input SigninInput {
+    email: EmailAddress!
+  }
 
-interface Error {
-  message: String!
-}
+  input SignupInput {
+    email: EmailAddress!
+  }
 
-enum Operation {
-  register
-  login
-}
+  input VerifyTokenInput {
+    token: String!
+    operation: Operation!
+  }
 
-#####################################################
-##############  Auth Input types.  ##################
-#####################################################
-input SignupInput {
-  email: EmailAddress!
-}
+  input CreateAccountInput {
+    token: String
+    operation: Operation!
+    username: String!
+  }
 
-input SigninInput {
-  email: EmailAddress!
-}
+  #####################################################
+  ############  Auth Response types.  #################
+  #####################################################
 
-input VerifyTokenInput {
-  token: String!
-  operation: Operation!
-}
+  type SingupResponse {
+    success: SignupSuccess
+    error: SignupError
+  }
 
-input CreateAccountInput {
-  token: String
-  operation: Operation!
-  username: String!
-}
+  type SignupSuccess {
+    message: String!
+    link: String
+  }
+  type SignupError implements Error {
+    message: String!
+  }
 
-#####################################################
-############  Auth Response types.  #################
-#####################################################
+  type SigninResponse {
+    success: SingninSuccess
+    error: SigninError
+  }
 
-type SingupResponse {
-  success: SignupSuccess
-  error: SignupError
-}
+  type SigninError implements Error {
+    message: String!
+  }
 
-type SignupSuccess {
-  message: String!
-  link: String
-}
-type SignupError implements Error {
-  message: String!
-}
+  type SingninSuccess {
+    message: String!
+  }
 
-type SigninResponse {
-  success: SingninSuccess
-  error: SigninError
-}
+  type VerifyTokenResponse {
+    verified: Boolean!
+    message: String!
+  }
 
-type SigninError implements Error {
-  message: String!
-}
-
-type SingninSuccess {
-  message: String!
-}
-
-type VerifyTokenResponse {
-  verified: Boolean!
-  message: String!
-}
-
-type CreateAccountResponse {
-  accountCreated: Boolean!
-}
-
+  type CreateAccountResponse {
+    accountCreated: Boolean!
+  }
 `;
