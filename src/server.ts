@@ -9,8 +9,9 @@ import { expressMiddleware } from '@apollo/server/express4';
 import app from './app.js';
 import db from './database/index.js';
 import schema from './graphql/schema.js';
-import { Context, context } from './graphql/context.js';
-import { error } from 'console';
+import { type Context, context } from './graphql/context.js';
+import { __PRODUCTION__ } from './utils/assertions.js';
+import { logger } from './utils/logger.js';
 
 (async () => {
   const httpServer = http.createServer(app);
@@ -19,9 +20,36 @@ import { error } from 'console';
   const server = new ApolloServer<Context>({
     schema,
     plugins: [
+      {
+        async serverWillStart() {
+          logger.info('Server starting!');
+        },
+        async startupDidFail({ error }) {
+          logger.fatal(`Startup failed: ${error}`);
+        }
+      },
       ApolloServerPluginLandingPageLocalDefault({ includeCookies: true }),
       ApolloServerPluginDrainHttpServer({ httpServer })
-    ]
+    ],
+    formatError: (error) => {
+      const formattedError = {
+        timestamp: new Date(),
+        message: error.message,
+        extensions: error.extensions,
+        locations: error.locations,
+        path: error.path
+      };
+
+      if (error) {
+        logger.error(error.message, {
+          meta: error.extensions,
+          path: error.path
+        });
+      }
+
+      return formattedError;
+    },
+    includeStacktraceInErrorResponses: __PRODUCTION__ ? false : true
   });
 
   // Ensure we wait for our server to start
@@ -40,7 +68,9 @@ import { error } from 'console';
   );
 
   // Modified server startup
-  await new Promise<void>((resolve) => httpServer.listen({ port: 4000 }, resolve)).then(async () => {
+  await new Promise<void>((resolve) =>
+    httpServer.listen({ port: 4000 }, resolve)
+  ).then(async () => {
     await db.sequelize
       .sync({
         // force: true
