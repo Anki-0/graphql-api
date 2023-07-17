@@ -29,9 +29,14 @@ const OperatorsMap: Map<string, keyof typeof Op> = new Map([
   ['_niregex', 'notIRegexp']
 ]);
 
-export const ResolveWhereFilter = <T extends ArbitraryObject | undefined | null>(obj: T): {} => {
+export const ResolveWhereFilter = <
+  T extends ArbitraryObject | undefined | null
+>(
+  obj: T
+): {} => {
   if (obj === null) throw Error('Filter Object can not null');
-  if (typeof obj === 'undefined') throw Error('Filter Object can not undefined');
+  if (typeof obj === 'undefined')
+    throw Error('Filter Object can not undefined');
 
   traverse(obj, ({ parent, key, value, meta }) => {
     if (OperatorsMap.has(key as string)) {

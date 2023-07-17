@@ -9,7 +9,8 @@ import {
   GraphQLList,
   GraphQLFieldConfig,
   isNonNullType,
-  isScalarType
+  isScalarType,
+  isEnumType
 } from 'graphql';
 import { CustomDirective } from '../types.js';
 import { GraphQLSchema } from 'graphql';
@@ -31,6 +32,7 @@ const typeFilterMap = new Map([
 ]);
 
 const generateFields = (
+  typeName: string,
   type: GraphQLInputType | GraphQLScalarType,
   by?: string[]
 ) => {
@@ -62,12 +64,28 @@ const generateFields = (
     return fields;
   }
 
-  typeFilterMap
-    .get(getNamedType(type).name)
-    ?.map((filterName) => (fields[filterName] = { type: type }));
+  typeFilterMap.get(typeName)?.map((filterKey) => {
+    if (filterKey === '_in') {
+      fields[filterKey] = { type: new GraphQLList(type) };
+    } else {
+      fields[filterKey] = { type: type };
+    }
+  });
 
   return fields;
 };
+
+class EnumFilterType extends GraphQLInputObjectType {
+  constructor(type: GraphQLInputType, byArgument?: string[]) {
+    super({
+      name: `${getNamedType(type).name}_with${
+        byArgument ? `_${byArgument.toString().replaceAll(',', '_')}` : ''
+      }`,
+      description: `${getNamedType(type).name} Filter with ${byArgument}`,
+      fields: generateFields('enums', type, byArgument)
+    });
+  }
+}
 
 class FilterType extends GraphQLInputObjectType {
   constructor(type: GraphQLInputType, byArgument?: string[]) {
@@ -76,7 +94,7 @@ class FilterType extends GraphQLInputObjectType {
         byArgument ? `_${byArgument.toString().replaceAll(',', '_')}` : ''
       }`,
       description: `${getNamedType(type).name} Filter with ${byArgument}`,
-      fields: generateFields(type, byArgument)
+      fields: generateFields(getNamedType(type).name, type, byArgument)
     });
   }
 }
@@ -109,7 +127,6 @@ const getFilterType = (
     const newType = new FilterType(type, by);
 
     searchFilterTypes.set(by, newType);
-    // console.log('----------===>', newType);
     return newType;
   }
 
@@ -127,6 +144,8 @@ const searchDirective: CustomDirective = (directiveName = 'search') => {
       fieldConfig.type = getFilterType(fieldConfig.type.ofType, by);
     } else if (isScalarType(fieldConfig.type)) {
       fieldConfig.type = getFilterType(fieldConfig.type, by);
+    } else if (isEnumType(fieldConfig.type)) {
+      fieldConfig.type = new EnumFilterType(fieldConfig.type);
     } else {
       throw new Error(`Not a scalar type: ${fieldConfig.type.toString()}`);
     }
@@ -151,8 +170,6 @@ const searchDirective: CustomDirective = (directiveName = 'search') => {
             fieldConfig,
             directiveName
           )?.[0];
-
-          // console.log('----------===>', fieldConfig.type);
 
           if (searchDirective) {
             // search directive argument can only be applyed to String Type FIELD_DEFINATION
