@@ -1,75 +1,102 @@
 export default /* GraphQL */ `
+  # enum AuthErrorCodes {
+  #   INVALID_CREDENTIALS
+  #   ACCOUNT_NOT_FOUND
+  #   ACCOUNT_LOCKED
+  #   EMAIL_NOT_VERIFIED
+  #   EMAIL_LINK_EXPIRED
+  #   SERVICE_UNAVAILABLE
+  #   UNKNOWN_ERROR
+  #   TOO_MANY_REQUESTS
+  # }
+
   #####################################################
   ####################  Auth types.  ##################
   #####################################################
-
-  interface Error {
-    message: String!
-  }
 
   enum Operation {
     register
     login
   }
 
-  #####################################################
-  ##############  Auth Input types.  ##################
-  #####################################################
-  input SigninInput {
-    email: EmailAddress!
+  ##############################################################
+  ############  Auth Signin with credential types.  ############
+  ##############################################################
+  input SigninWithCredentialsInput {
+    email: String!
+    password: String!
+  }
+  type SigninWithCredentialsResponse {
+    success: SingninSuccess
+    error: SigninError
   }
 
-  input SignupInput {
-    email: EmailAddress!
-  }
-
-  input VerifyTokenInput {
+  type SingninSuccess {
+    message: String!
     token: String!
-    operation: Operation!
   }
 
-  input CreateAccountInput {
-    token: String
-    operation: Operation!
+  type SigninError implements Error {
+    message: String!
+    code: String!
+  }
+
+  ################################################################
+  ############  Auth Signup with credential types.  ##############
+  ################################################################
+  input SignupWithCredentialsInput {
+    email: String!
+    password: String!
     username: String!
+  }
+
+  type SignupWithCredentialsResponse {
+    success: SingnupSuccess
+    error: SignupError
+  }
+
+  type SingnupSuccess {
+    message: String!
+  }
+
+  type SignupError implements Error {
+    message: String!
+    code: String!
   }
 
   #####################################################
   ############  Auth Response types.  #################
   #####################################################
 
-  type SingupResponse {
-    success: SignupSuccess
-    error: SignupError
+  enum TokenType {
+    OTP
+    LINK
+  }
+  enum ProviderTypes {
+    oauth
+    email
+    credentials
   }
 
-  type SignupSuccess {
-    message: String!
-    link: String
+  input VerifyTokenInput {
+    token: String!
+    operation: Operation!
+    email: String!
+    type: TokenType!
+    provider: ProviderTypes!
   }
-  type SignupError implements Error {
-    message: String!
-  }
-
-  type SigninResponse {
-    success: SingninSuccess
-    error: SigninError
-  }
-
-  type SigninError implements Error {
-    message: String!
-  }
-
-  type SingninSuccess {
-    message: String!
-  }
-
   type VerifyTokenResponse {
     verified: Boolean!
     message: String!
   }
 
-  type CreateAccountResponse {
-    accountCreated: Boolean!
-  }
+  # input CreateAccountInput {
+  #   token: String
+  #   operation: Operation!
+  #   username: String!
+  # }
+
+  # type CreateAccountResponse {
+  #   accountCreated: Boolean!
+  # }
 `;

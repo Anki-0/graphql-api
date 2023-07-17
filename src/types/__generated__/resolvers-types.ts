@@ -25,18 +25,19 @@ export type Book = {
   title?: Maybe<Scalars['String']['output']>;
 };
 
-export type CreateAccountInput = {
-  operation: Operation;
-  token?: InputMaybe<Scalars['String']['input']>;
-  username: Scalars['String']['input'];
-};
-
-export type CreateAccountResponse = {
-  __typename?: 'CreateAccountResponse';
-  accountCreated: Scalars['Boolean']['output'];
+/** DateTime Filter with undefined */
+export type DateTime_With = {
+  _between?: InputMaybe<Scalars['DateTime']['input']>;
+  _eq?: InputMaybe<Scalars['DateTime']['input']>;
+  _gt?: InputMaybe<Scalars['DateTime']['input']>;
+  _gte?: InputMaybe<Scalars['DateTime']['input']>;
+  _in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']['input']>>>;
+  _le?: InputMaybe<Scalars['DateTime']['input']>;
+  _lt?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
 export type Error = {
+  code: Scalars['String']['output'];
   message: Scalars['String']['output'];
 };
 
@@ -45,14 +46,14 @@ export type FindPostByInput = {
   _not?: InputMaybe<Array<FindPostByInput>>;
   _or?: InputMaybe<Array<FindPostByInput>>;
   content?: InputMaybe<Scalars['String']['input']>;
-  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  id?: InputMaybe<Scalars['String']['input']>;
+  createdAt?: InputMaybe<DateTime_With>;
+  id?: InputMaybe<String_With_Exact_Fulltext_Hash>;
   image?: InputMaybe<Scalars['String']['input']>;
   publishedBy?: InputMaybe<Scalars['String']['input']>;
-  slug?: InputMaybe<Scalars['String']['input']>;
-  status?: InputMaybe<PostStatus>;
-  title?: InputMaybe<Scalars['String']['input']>;
-  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  slug?: InputMaybe<String_With_Exact>;
+  status?: InputMaybe<PostStatus_With>;
+  title?: InputMaybe<String_With_Exact>;
+  updatedAt?: InputMaybe<DateTime_With>;
 };
 
 export type FindTagsByInput = {
@@ -70,30 +71,30 @@ export type FindUserByInput = {
   bio?: InputMaybe<Scalars['String']['input']>;
   birthdate?: InputMaybe<Scalars['DateTime']['input']>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  email?: InputMaybe<Scalars['String']['input']>;
+  email?: InputMaybe<String_With_Exact>;
   email_verified?: InputMaybe<Scalars['DateTime']['input']>;
-  id?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<String_With_Exact>;
   image?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
   phone_number?: InputMaybe<Scalars['Int']['input']>;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
   user_role?: InputMaybe<UserRoles>;
-  username?: InputMaybe<Scalars['String']['input']>;
+  username?: InputMaybe<String_With_Exact>;
+};
+
+export type InvalidCredentialError = Error & {
+  __typename?: 'InvalidCredentialError';
+  code: Scalars['String']['output'];
+  message: Scalars['String']['output'];
 };
 
 export type Mutation = {
   __typename?: 'Mutation';
-  createAccount: CreateAccountResponse;
   createPost: Post;
   deletePost: PostDeletionRespose;
-  signin: SigninResponse;
-  signup: SingupResponse;
+  signinWithCredentials: SigninWithCredentialsResponse;
+  signupWithCredentials: SignupWithCredentialsResponse;
   verifyToken: VerifyTokenResponse;
-};
-
-
-export type MutationCreateAccountArgs = {
-  input: CreateAccountInput;
 };
 
 
@@ -107,13 +108,13 @@ export type MutationDeletePostArgs = {
 };
 
 
-export type MutationSigninArgs = {
-  input: SigninInput;
+export type MutationSigninWithCredentialsArgs = {
+  input: SigninWithCredentialsInput;
 };
 
 
-export type MutationSignupArgs = {
-  input: SignupInput;
+export type MutationSignupWithCredentialsArgs = {
+  input: SignupWithCredentialsInput;
 };
 
 
@@ -146,11 +147,21 @@ export type PopularTagsResponse = {
   updatedAt?: Maybe<Scalars['String']['output']>;
 };
 
+
+export type PopularTagsResponseCreatedAtArgs = {
+  format?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type PopularTagsResponseUpdatedAtArgs = {
+  format?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type Post = {
   __typename?: 'Post';
   banner?: Maybe<Scalars['String']['output']>;
   content?: Maybe<Scalars['String']['output']>;
-  createdAt: Scalars['DateTime']['output'];
+  createdAt?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   image?: Maybe<Scalars['String']['output']>;
   modifiedBy?: Maybe<Scalars['String']['output']>;
@@ -160,7 +171,17 @@ export type Post = {
   subTitle?: Maybe<Scalars['String']['output']>;
   tags?: Maybe<Array<Maybe<Tag>>>;
   title: Scalars['String']['output'];
-  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  updatedAt?: Maybe<Scalars['String']['output']>;
+};
+
+
+export type PostCreatedAtArgs = {
+  format?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type PostUpdatedAtArgs = {
+  format?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type PostCreationInput = {
@@ -204,11 +225,23 @@ export enum PostStatus {
   Published = 'published'
 }
 
+/** PostStatus Filter with undefined */
+export type PostStatus_With = {
+  _eq?: InputMaybe<PostStatus>;
+  _in?: InputMaybe<Array<InputMaybe<PostStatus>>>;
+};
+
 export type PostsResponse = {
   __typename?: 'PostsResponse';
   data: Array<Maybe<Post>>;
   pagination?: Maybe<PaginationResponse>;
 };
+
+export enum ProviderTypes {
+  Credentials = 'credentials',
+  Email = 'email',
+  Oauth = 'oauth'
+}
 
 export type Query = {
   __typename?: 'Query';
@@ -251,43 +284,72 @@ export enum SearchFilterArgs {
 
 export type SigninError = Error & {
   __typename?: 'SigninError';
+  code: Scalars['String']['output'];
   message: Scalars['String']['output'];
 };
 
-export type SigninInput = {
-  email: Scalars['EmailAddress']['input'];
+export type SigninWithCredentialsInput = {
+  email: Scalars['String']['input'];
+  password: Scalars['String']['input'];
 };
 
-export type SigninResponse = {
-  __typename?: 'SigninResponse';
+export type SigninWithCredentialsResponse = {
+  __typename?: 'SigninWithCredentialsResponse';
   error?: Maybe<SigninError>;
   success?: Maybe<SingninSuccess>;
 };
 
 export type SignupError = Error & {
   __typename?: 'SignupError';
+  code: Scalars['String']['output'];
   message: Scalars['String']['output'];
 };
 
-export type SignupInput = {
-  email: Scalars['EmailAddress']['input'];
+export type SignupWithCredentialsInput = {
+  email: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+  username: Scalars['String']['input'];
 };
 
-export type SignupSuccess = {
-  __typename?: 'SignupSuccess';
-  link?: Maybe<Scalars['String']['output']>;
-  message: Scalars['String']['output'];
+export type SignupWithCredentialsResponse = {
+  __typename?: 'SignupWithCredentialsResponse';
+  error?: Maybe<SignupError>;
+  success?: Maybe<SingnupSuccess>;
 };
 
 export type SingninSuccess = {
   __typename?: 'SingninSuccess';
   message: Scalars['String']['output'];
+  token: Scalars['String']['output'];
 };
 
-export type SingupResponse = {
-  __typename?: 'SingupResponse';
-  error?: Maybe<SignupError>;
-  success?: Maybe<SignupSuccess>;
+export type SingnupSuccess = {
+  __typename?: 'SingnupSuccess';
+  message: Scalars['String']['output'];
+};
+
+/** String Filter with exact */
+export type String_With_Exact = {
+  _between?: InputMaybe<Scalars['String']['input']>;
+  _eq?: InputMaybe<Scalars['String']['input']>;
+  _gt?: InputMaybe<Scalars['String']['input']>;
+  _gte?: InputMaybe<Scalars['String']['input']>;
+  _in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  _le?: InputMaybe<Scalars['String']['input']>;
+  _lt?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** String Filter with exact,fulltext,hash */
+export type String_With_Exact_Fulltext_Hash = {
+  _alloftext?: InputMaybe<Scalars['String']['input']>;
+  _anyoftext?: InputMaybe<Scalars['String']['input']>;
+  _between?: InputMaybe<Scalars['String']['input']>;
+  _eq?: InputMaybe<Scalars['String']['input']>;
+  _gt?: InputMaybe<Scalars['String']['input']>;
+  _gte?: InputMaybe<Scalars['String']['input']>;
+  _in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  _le?: InputMaybe<Scalars['String']['input']>;
+  _lt?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type Tag = {
@@ -299,27 +361,52 @@ export type Tag = {
   updatedAt?: Maybe<Scalars['String']['output']>;
 };
 
+
+export type TagCreatedAtArgs = {
+  format?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type TagUpdatedAtArgs = {
+  format?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type TagsFilterInput = {
   where?: InputMaybe<FindTagsByInput>;
 };
+
+export enum TokenType {
+  Link = 'LINK',
+  Otp = 'OTP'
+}
 
 export type User = {
   __typename?: 'User';
   address?: Maybe<Scalars['String']['output']>;
   bio?: Maybe<Scalars['String']['output']>;
   birthdate?: Maybe<Scalars['DateTime']['output']>;
-  createdAt: Scalars['DateTime']['output'];
+  createdAt?: Maybe<Scalars['String']['output']>;
   email: Scalars['String']['output'];
   email_verified?: Maybe<Scalars['DateTime']['output']>;
   id: Scalars['ID']['output'];
   image?: Maybe<Scalars['String']['output']>;
   name?: Maybe<Scalars['String']['output']>;
   phone_number?: Maybe<Scalars['String']['output']>;
-  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  updatedAt?: Maybe<Scalars['String']['output']>;
   user_role: Scalars['String']['output'];
   user_token?: Maybe<Scalars['String']['output']>;
   user_token_expat?: Maybe<Scalars['DateTime']['output']>;
   username: Scalars['String']['output'];
+};
+
+
+export type UserCreatedAtArgs = {
+  format?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type UserUpdatedAtArgs = {
+  format?: InputMaybe<Scalars['String']['input']>;
 };
 
 export enum UserAccountStatus {
@@ -338,8 +425,11 @@ export enum UserRoles {
 }
 
 export type VerifyTokenInput = {
+  email: Scalars['String']['input'];
   operation: Operation;
+  provider: ProviderTypes;
   token: Scalars['String']['input'];
+  type: TokenType;
 };
 
 export type VerifyTokenResponse = {
@@ -429,16 +519,15 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<RefType extends Record<string, unknown>> = ResolversObject<{
-  Error: ( SigninError ) | ( SignupError );
+  Error: ( InvalidCredentialError ) | ( SigninError ) | ( SignupError );
 }>;
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
   Book: ResolverTypeWrapper<Book>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
-  CreateAccountInput: CreateAccountInput;
-  CreateAccountResponse: ResolverTypeWrapper<CreateAccountResponse>;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']['output']>;
+  DateTime_with: DateTime_With;
   EmailAddress: ResolverTypeWrapper<Scalars['EmailAddress']['output']>;
   Error: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Error']>;
   FindPostByInput: FindPostByInput;
@@ -446,6 +535,7 @@ export type ResolversTypes = ResolversObject<{
   FindUserByInput: FindUserByInput;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
+  InvalidCredentialError: ResolverTypeWrapper<InvalidCredentialError>;
   Mutation: ResolverTypeWrapper<{}>;
   Operation: Operation;
   PaginationInput: PaginationInput;
@@ -459,20 +549,25 @@ export type ResolversTypes = ResolversObject<{
   PostDeletionRespose: ResolverTypeWrapper<PostDeletionRespose>;
   PostFilterInput: PostFilterInput;
   PostStatus: PostStatus;
+  PostStatus_with: PostStatus_With;
   PostsResponse: ResolverTypeWrapper<PostsResponse>;
+  ProviderTypes: ProviderTypes;
   Query: ResolverTypeWrapper<{}>;
   SearchFilterArgs: SearchFilterArgs;
   SigninError: ResolverTypeWrapper<SigninError>;
-  SigninInput: SigninInput;
-  SigninResponse: ResolverTypeWrapper<SigninResponse>;
+  SigninWithCredentialsInput: SigninWithCredentialsInput;
+  SigninWithCredentialsResponse: ResolverTypeWrapper<SigninWithCredentialsResponse>;
   SignupError: ResolverTypeWrapper<SignupError>;
-  SignupInput: SignupInput;
-  SignupSuccess: ResolverTypeWrapper<SignupSuccess>;
+  SignupWithCredentialsInput: SignupWithCredentialsInput;
+  SignupWithCredentialsResponse: ResolverTypeWrapper<SignupWithCredentialsResponse>;
   SingninSuccess: ResolverTypeWrapper<SingninSuccess>;
-  SingupResponse: ResolverTypeWrapper<SingupResponse>;
+  SingnupSuccess: ResolverTypeWrapper<SingnupSuccess>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
+  String_with_exact: String_With_Exact;
+  String_with_exact_fulltext_hash: String_With_Exact_Fulltext_Hash;
   Tag: ResolverTypeWrapper<Tag>;
   TagsFilterInput: TagsFilterInput;
+  TokenType: TokenType;
   User: ResolverTypeWrapper<User>;
   UserAccountStatus: UserAccountStatus;
   UserFilterInput: UserFilterInput;
@@ -487,9 +582,8 @@ export type ResolversTypes = ResolversObject<{
 export type ResolversParentTypes = ResolversObject<{
   Book: Book;
   Boolean: Scalars['Boolean']['output'];
-  CreateAccountInput: CreateAccountInput;
-  CreateAccountResponse: CreateAccountResponse;
   DateTime: Scalars['DateTime']['output'];
+  DateTime_with: DateTime_With;
   EmailAddress: Scalars['EmailAddress']['output'];
   Error: ResolversInterfaceTypes<ResolversParentTypes>['Error'];
   FindPostByInput: FindPostByInput;
@@ -497,6 +591,7 @@ export type ResolversParentTypes = ResolversObject<{
   FindUserByInput: FindUserByInput;
   ID: Scalars['ID']['output'];
   Int: Scalars['Int']['output'];
+  InvalidCredentialError: InvalidCredentialError;
   Mutation: {};
   PaginationInput: PaginationInput;
   PaginationResponse: PaginationResponse;
@@ -508,17 +603,20 @@ export type ResolversParentTypes = ResolversObject<{
   PostDeletionArgs: PostDeletionArgs;
   PostDeletionRespose: PostDeletionRespose;
   PostFilterInput: PostFilterInput;
+  PostStatus_with: PostStatus_With;
   PostsResponse: PostsResponse;
   Query: {};
   SigninError: SigninError;
-  SigninInput: SigninInput;
-  SigninResponse: SigninResponse;
+  SigninWithCredentialsInput: SigninWithCredentialsInput;
+  SigninWithCredentialsResponse: SigninWithCredentialsResponse;
   SignupError: SignupError;
-  SignupInput: SignupInput;
-  SignupSuccess: SignupSuccess;
+  SignupWithCredentialsInput: SignupWithCredentialsInput;
+  SignupWithCredentialsResponse: SignupWithCredentialsResponse;
   SingninSuccess: SingninSuccess;
-  SingupResponse: SingupResponse;
+  SingnupSuccess: SingnupSuccess;
   String: Scalars['String']['output'];
+  String_with_exact: String_With_Exact;
+  String_with_exact_fulltext_hash: String_With_Exact_Fulltext_Hash;
   Tag: Tag;
   TagsFilterInput: TagsFilterInput;
   User: User;
@@ -546,11 +644,6 @@ export type BookResolvers<ContextType = Context, ParentType extends ResolversPar
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type CreateAccountResponseResolvers<ContextType = Context, ParentType extends ResolversParentTypes['CreateAccountResponse'] = ResolversParentTypes['CreateAccountResponse']> = ResolversObject<{
-  accountCreated?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
 export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['DateTime'], any> {
   name: 'DateTime';
 }
@@ -560,16 +653,22 @@ export interface EmailAddressScalarConfig extends GraphQLScalarTypeConfig<Resolv
 }
 
 export type ErrorResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Error'] = ResolversParentTypes['Error']> = ResolversObject<{
-  __resolveType: TypeResolveFn<'SigninError' | 'SignupError', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'InvalidCredentialError' | 'SigninError' | 'SignupError', ParentType, ContextType>;
+  code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 }>;
 
+export type InvalidCredentialErrorResolvers<ContextType = Context, ParentType extends ResolversParentTypes['InvalidCredentialError'] = ResolversParentTypes['InvalidCredentialError']> = ResolversObject<{
+  code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type MutationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
-  createAccount?: Resolver<ResolversTypes['CreateAccountResponse'], ParentType, ContextType, RequireFields<MutationCreateAccountArgs, 'input'>>;
   createPost?: Resolver<ResolversTypes['Post'], ParentType, ContextType, RequireFields<MutationCreatePostArgs, 'input'>>;
   deletePost?: Resolver<ResolversTypes['PostDeletionRespose'], ParentType, ContextType, RequireFields<MutationDeletePostArgs, 'input'>>;
-  signin?: Resolver<ResolversTypes['SigninResponse'], ParentType, ContextType, RequireFields<MutationSigninArgs, 'input'>>;
-  signup?: Resolver<ResolversTypes['SingupResponse'], ParentType, ContextType, RequireFields<MutationSignupArgs, 'input'>>;
+  signinWithCredentials?: Resolver<ResolversTypes['SigninWithCredentialsResponse'], ParentType, ContextType, RequireFields<MutationSigninWithCredentialsArgs, 'input'>>;
+  signupWithCredentials?: Resolver<ResolversTypes['SignupWithCredentialsResponse'], ParentType, ContextType, RequireFields<MutationSignupWithCredentialsArgs, 'input'>>;
   verifyToken?: Resolver<ResolversTypes['VerifyTokenResponse'], ParentType, ContextType, RequireFields<MutationVerifyTokenArgs, 'input'>>;
 }>;
 
@@ -581,17 +680,17 @@ export type PaginationResponseResolvers<ContextType = Context, ParentType extend
 
 export type PopularTagsResponseResolvers<ContextType = Context, ParentType extends ResolversParentTypes['PopularTagsResponse'] = ResolversParentTypes['PopularTagsResponse']> = ResolversObject<{
   count?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  createdAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, Partial<PopularTagsResponseCreatedAtArgs>>;
   id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   tag_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  updatedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  updatedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, Partial<PopularTagsResponseUpdatedAtArgs>>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type PostResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Post'] = ResolversParentTypes['Post']> = ResolversObject<{
   banner?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   content?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  createdAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, Partial<PostCreatedAtArgs>>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   image?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   modifiedBy?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -601,7 +700,7 @@ export type PostResolvers<ContextType = Context, ParentType extends ResolversPar
   subTitle?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   tags?: Resolver<Maybe<Array<Maybe<ResolversTypes['Tag']>>>, ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  updatedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  updatedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, Partial<PostUpdatedAtArgs>>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -636,44 +735,46 @@ export type QueryResolvers<ContextType = Context, ParentType extends ResolversPa
 }>;
 
 export type SigninErrorResolvers<ContextType = Context, ParentType extends ResolversParentTypes['SigninError'] = ResolversParentTypes['SigninError']> = ResolversObject<{
+  code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type SigninResponseResolvers<ContextType = Context, ParentType extends ResolversParentTypes['SigninResponse'] = ResolversParentTypes['SigninResponse']> = ResolversObject<{
+export type SigninWithCredentialsResponseResolvers<ContextType = Context, ParentType extends ResolversParentTypes['SigninWithCredentialsResponse'] = ResolversParentTypes['SigninWithCredentialsResponse']> = ResolversObject<{
   error?: Resolver<Maybe<ResolversTypes['SigninError']>, ParentType, ContextType>;
   success?: Resolver<Maybe<ResolversTypes['SingninSuccess']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type SignupErrorResolvers<ContextType = Context, ParentType extends ResolversParentTypes['SignupError'] = ResolversParentTypes['SignupError']> = ResolversObject<{
+  code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type SignupSuccessResolvers<ContextType = Context, ParentType extends ResolversParentTypes['SignupSuccess'] = ResolversParentTypes['SignupSuccess']> = ResolversObject<{
-  link?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+export type SignupWithCredentialsResponseResolvers<ContextType = Context, ParentType extends ResolversParentTypes['SignupWithCredentialsResponse'] = ResolversParentTypes['SignupWithCredentialsResponse']> = ResolversObject<{
+  error?: Resolver<Maybe<ResolversTypes['SignupError']>, ParentType, ContextType>;
+  success?: Resolver<Maybe<ResolversTypes['SingnupSuccess']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type SingninSuccessResolvers<ContextType = Context, ParentType extends ResolversParentTypes['SingninSuccess'] = ResolversParentTypes['SingninSuccess']> = ResolversObject<{
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  token?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type SingupResponseResolvers<ContextType = Context, ParentType extends ResolversParentTypes['SingupResponse'] = ResolversParentTypes['SingupResponse']> = ResolversObject<{
-  error?: Resolver<Maybe<ResolversTypes['SignupError']>, ParentType, ContextType>;
-  success?: Resolver<Maybe<ResolversTypes['SignupSuccess']>, ParentType, ContextType>;
+export type SingnupSuccessResolvers<ContextType = Context, ParentType extends ResolversParentTypes['SingnupSuccess'] = ResolversParentTypes['SingnupSuccess']> = ResolversObject<{
+  message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type TagResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Tag'] = ResolversParentTypes['Tag']> = ResolversObject<{
   count?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  createdAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, Partial<TagCreatedAtArgs>>;
   id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   tag_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  updatedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  updatedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, Partial<TagUpdatedAtArgs>>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -681,14 +782,14 @@ export type UserResolvers<ContextType = Context, ParentType extends ResolversPar
   address?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   bio?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   birthdate?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
-  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  createdAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, Partial<UserCreatedAtArgs>>;
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   email_verified?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   image?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   phone_number?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  updatedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  updatedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, Partial<UserUpdatedAtArgs>>;
   user_role?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   user_token?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   user_token_expat?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
@@ -704,10 +805,10 @@ export type VerifyTokenResponseResolvers<ContextType = Context, ParentType exten
 
 export type Resolvers<ContextType = Context> = ResolversObject<{
   Book?: BookResolvers<ContextType>;
-  CreateAccountResponse?: CreateAccountResponseResolvers<ContextType>;
   DateTime?: GraphQLScalarType;
   EmailAddress?: GraphQLScalarType;
   Error?: ErrorResolvers<ContextType>;
+  InvalidCredentialError?: InvalidCredentialErrorResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   PaginationResponse?: PaginationResponseResolvers<ContextType>;
   PopularTagsResponse?: PopularTagsResponseResolvers<ContextType>;
@@ -718,11 +819,11 @@ export type Resolvers<ContextType = Context> = ResolversObject<{
   PostsResponse?: PostsResponseResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   SigninError?: SigninErrorResolvers<ContextType>;
-  SigninResponse?: SigninResponseResolvers<ContextType>;
+  SigninWithCredentialsResponse?: SigninWithCredentialsResponseResolvers<ContextType>;
   SignupError?: SignupErrorResolvers<ContextType>;
-  SignupSuccess?: SignupSuccessResolvers<ContextType>;
+  SignupWithCredentialsResponse?: SignupWithCredentialsResponseResolvers<ContextType>;
   SingninSuccess?: SingninSuccessResolvers<ContextType>;
-  SingupResponse?: SingupResponseResolvers<ContextType>;
+  SingnupSuccess?: SingnupSuccessResolvers<ContextType>;
   Tag?: TagResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
   VerifyTokenResponse?: VerifyTokenResponseResolvers<ContextType>;

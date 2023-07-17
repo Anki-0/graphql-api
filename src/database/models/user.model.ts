@@ -1,8 +1,19 @@
-import { Model, Sequelize, InferAttributes, CreationOptional, InferCreationAttributes } from 'sequelize';
+import {
+  Model,
+  Sequelize,
+  InferAttributes,
+  CreationOptional,
+  InferCreationAttributes,
+  NonAttribute
+} from 'sequelize';
 
 import { DataTypes } from '../../utils/type.js';
+import { Account } from './account.model.js';
 
-export class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
+export class User extends Model<
+  InferAttributes<User>,
+  InferCreationAttributes<User>
+> {
   // [x: string]: any;
   declare id: CreationOptional<string>;
   declare username: string;
@@ -19,6 +30,7 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
   declare user_token?: string;
   declare createdAt: CreationOptional<string>;
   declare updatedAt?: CreationOptional<string>;
+  declare accounts?: NonAttribute<Account[]>;
 
   static associate(models: any) {
     User.hasMany(models.account, {

@@ -1,118 +1,144 @@
-import { gql } from 'graphql-tag';
-export default gql/* GraphQL */ `
-  #graphql
+import {gql} from 'graphql-tag'; export default gql/* GraphQL */ `
+ 
 
-  directive @date(defaultFormat: String = "dd/MM/yyyy") on FIELD_DEFINITION
+                      directive @date(
+                      defaultFormat: String = "dd/MM/yyyy"
+                      ) on FIELD_DEFINITION
+    
 
-  #graphql
 
-  enum SearchFilterArgs {
-    hash
-    exact
-    regexp
-    term
-    fulltext
-  }
-  directive @search(
-    by: [SearchFilterArgs!]
-  ) on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
+    enum SearchFilterArgs {
+      hash
+      exact
+      regexp
+      term
+      fulltext
+    }
+    directive @search(by: [SearchFilterArgs!]) on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
+    
 
-  #graphql
 
-  directive @date(defaultFormat: String = "dd/MM/yyyy") on FIELD_DEFINITION
+                      directive @date(
+                      defaultFormat: String = "dd/MM/yyyy"
+                      ) on FIELD_DEFINITION
+    
 
-  #graphql
 
-  enum SearchFilterArgs {
-    hash
-    exact
-    regexp
-    term
-    fulltext
-  }
-  directive @search(
-    by: [SearchFilterArgs!]
-  ) on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
+    enum SearchFilterArgs {
+      hash
+      exact
+      regexp
+      term
+      fulltext
+    }
+    directive @search(by: [SearchFilterArgs!]) on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
+    
 
-  #graphql
-  scalar EmailAddress
-  #graphql
-  scalar DateTime
+ scalar EmailAddress
+
+ scalar DateTime 
+
+  # enum AuthErrorCodes {
+  #   INVALID_CREDENTIALS
+  #   ACCOUNT_NOT_FOUND
+  #   ACCOUNT_LOCKED
+  #   EMAIL_NOT_VERIFIED
+  #   EMAIL_LINK_EXPIRED
+  #   SERVICE_UNAVAILABLE
+  #   UNKNOWN_ERROR
+  #   TOO_MANY_REQUESTS
+  # }
 
   #####################################################
   ####################  Auth types.  ##################
   #####################################################
-
-  interface Error {
-    message: String!
-  }
 
   enum Operation {
     register
     login
   }
 
-  #####################################################
-  ##############  Auth Input types.  ##################
-  #####################################################
-  input SigninInput {
-    email: EmailAddress!
+  ##############################################################
+  ############  Auth Signin with credential types.  ############
+  ##############################################################
+  input SigninWithCredentialsInput {
+    email: String!
+    password: String!
+  }
+  type SigninWithCredentialsResponse {
+    success: SingninSuccess
+    error: SigninError
   }
 
-  input SignupInput {
-    email: EmailAddress!
-  }
-
-  input VerifyTokenInput {
+  type SingninSuccess {
+    message: String!
     token: String!
-    operation: Operation!
   }
 
-  input CreateAccountInput {
-    token: String
-    operation: Operation!
+  type SigninError implements Error {
+    message: String!
+    code: String!
+  }
+
+  ################################################################
+  ############  Auth Signup with credential types.  ##############
+  ################################################################
+  input SignupWithCredentialsInput {
+    email: String!
+    password: String!
     username: String!
+  }
+
+  type SignupWithCredentialsResponse {
+    success: SingnupSuccess
+    error: SignupError
+  }
+
+  type SingnupSuccess {
+    message: String!
+  }
+
+  type SignupError implements Error {
+    message: String!
+    code: String!
   }
 
   #####################################################
   ############  Auth Response types.  #################
   #####################################################
 
-  type SingupResponse {
-    success: SignupSuccess
-    error: SignupError
+  enum TokenType {
+    OTP
+    LINK
+  }
+  enum ProviderTypes {
+    oauth
+    email
+    credentials
   }
 
-  type SignupSuccess {
-    message: String!
-    link: String
+  input VerifyTokenInput {
+    token: String!
+    operation: Operation!
+    email: String!
+    type: TokenType!
+    provider: ProviderTypes!
   }
-  type SignupError implements Error {
-    message: String!
-  }
-
-  type SigninResponse {
-    success: SingninSuccess
-    error: SigninError
-  }
-
-  type SigninError implements Error {
-    message: String!
-  }
-
-  type SingninSuccess {
-    message: String!
-  }
-
   type VerifyTokenResponse {
     verified: Boolean!
     message: String!
   }
 
-  type CreateAccountResponse {
-    accountCreated: Boolean!
-  }
-  #graphql
+  # input CreateAccountInput {
+  #   token: String
+  #   operation: Operation!
+  #   username: String!
+  # }
+
+  # type CreateAccountResponse {
+  #   accountCreated: Boolean!
+  # }
+
   # Comments in GraphQL strings (such as this one) start with the hash (#) symbol.
 
   # This "Book" type defines the queryable fields for every book in our data source.
@@ -127,7 +153,6 @@ export default gql/* GraphQL */ `
   type Query {
     books: [Book]
   }
-  #graphql
 
   #####################################################
   ###################  Common types.  #################
@@ -143,7 +168,16 @@ export default gql/* GraphQL */ `
     hasPrevPage: Boolean
   }
 
-  #graphql
+  interface Error {
+    message: String!
+    code: String!
+  }
+
+  type InvalidCredentialError implements Error {
+    message: String!
+    code: String!
+  }
+
   ########################################################################
   ##  This file hold our Root Definitions (read as Query and Mutation)  ##
   ########################################################################
@@ -162,17 +196,20 @@ export default gql/* GraphQL */ `
 
   type Mutation {
     # Auth
-    signin(input: SigninInput!): SigninResponse!
-    signup(input: SignupInput!): SingupResponse!
+    signinWithCredentials(
+      input: SigninWithCredentialsInput!
+    ): SigninWithCredentialsResponse!
+    signupWithCredentials(
+      input: SignupWithCredentialsInput!
+    ): SignupWithCredentialsResponse!
     verifyToken(input: VerifyTokenInput!): VerifyTokenResponse!
-    createAccount(input: CreateAccountInput!): CreateAccountResponse!
+    # signup(input: SignupInput!): SingupResponse!
+    # createAccount(input: CreateAccountInput!): CreateAccountResponse!
 
     #Post
     createPost(input: PostCreationInput!): Post!
     deletePost(input: PostDeletionArgs!): PostDeletionRespose!
   }
-
-  #graphql
 
   enum PostStatus {
     published
@@ -216,7 +253,7 @@ export default gql/* GraphQL */ `
     title: String @search(by: [exact])
     slug: String @search(by: [exact])
     publishedBy: String
-    status: PostStatus = published
+    status: PostStatus = published @search
     image: String
     content: String
     createdAt: DateTime @search
@@ -267,7 +304,6 @@ export default gql/* GraphQL */ `
     message: String!
   }
 
-  #graphql
   type Tag {
     id: ID
     tag_name: String
@@ -295,7 +331,6 @@ export default gql/* GraphQL */ `
     where: FindTagsByInput
   }
 
-  #graphql
   type User {
     id: ID!
     username: String! @search
@@ -348,4 +383,4 @@ export default gql/* GraphQL */ `
   input UserFilterInput {
     where: FindUserByInput
   }
-`;
+`

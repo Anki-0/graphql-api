@@ -8,8 +8,12 @@ import {
 } from 'sequelize';
 import { DataTypes } from '../../utils/type.js';
 import { User } from './user.model.js';
+import { createScryptHash } from '../../auth/lib/helpers.js';
 
-export class Account extends Model<InferAttributes<Account>, InferCreationAttributes<Account>> {
+export class Account extends Model<
+  InferAttributes<Account>,
+  InferCreationAttributes<Account>
+> {
   declare id?: CreationOptional<string>;
   declare user_id: ForeignKey<User['id']>;
   declare provider_type: string;
@@ -96,7 +100,18 @@ export default (sequelize: Sequelize, DataTypes: DataTypes) => {
     {
       sequelize,
       modelName: 'account',
-      timestamps: false
+      timestamps: false,
+      hooks: {
+        beforeCreate: async (account, options) => {
+          if (account.password) {
+            const { salt, hashedKeyBuffer } = await createScryptHash(
+              account.password
+            );
+
+            account.password = salt + '|' + hashedKeyBuffer.toString('hex');
+          }
+        }
+      }
     }
   );
   return Account;

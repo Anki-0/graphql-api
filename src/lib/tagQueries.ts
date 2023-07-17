@@ -1,11 +1,9 @@
 import {
   InputMaybe,
-  PaginationInput,
-  PopularTagsResponse
+  PaginationInput
 } from '../types/__generated__/resolvers-types.js';
 import { __DEV__ } from '../utils/assertions.js';
 import db from '../database/index.js';
-import { QueryTypes } from 'sequelize';
 import { userInputError } from './graphql-error.js';
 
 interface FindAllTagsParams {

@@ -1,17 +1,20 @@
 import { GraphQLError } from 'graphql';
-import { MutationResolvers, Post } from '../../../types/__generated__/resolvers-types.js';
+import {
+  MutationResolvers,
+  Post
+} from '../../../types/__generated__/resolvers-types.js';
 import { parseJSON } from 'date-fns';
 import { QueryTypes } from 'sequelize';
 import { DELETE_POST_WITH_ID } from '../../../lib/postsQueries.js';
 
 // Demo user
-const auth = {
-  isUserLogged: true,
-  currentUser: {
-    id: '007ceee9-e603-4392-b2da-b10b532921e7',
-    role: 'admin'
-  }
-};
+// const auth = {
+//   isUserLogged: true,
+//   currentUser: {
+//     id: '007ceee9-e603-4392-b2da-b10b532921e7',
+//     role: 'admin'
+//   }
+// };
 
 type TAGS = {
   tag_name: string;
@@ -19,8 +22,8 @@ type TAGS = {
 }[];
 
 export const PostMutations: MutationResolvers = {
-  createPost: async (_, { input }, { db }) => {
-    if (!auth.isUserLogged) {
+  createPost: async (_, { input }, { db, auth }) => {
+    if (!auth.isUserLoggedIn) {
       throw new GraphQLError('User is not Authenticated!');
     }
 
@@ -32,7 +35,7 @@ export const PostMutations: MutationResolvers = {
       image: input.image as string,
       banner: input.banner as string,
       status: input.status,
-      publishedBy: auth.currentUser?.id,
+      publishedBy: auth.user?.id,
       createdAt: parseJSON(Date.now())
     });
 
@@ -81,7 +84,7 @@ export const PostMutations: MutationResolvers = {
       await db.sequelize?.query(
         `INSERT IGNORE
                                  INTO users_tags_junctions (user_id, tag_id, createdAt)
-                                 SELECT '${auth.currentUser.id}', tags.id, now()
+                                 SELECT '${auth.user?.id}', tags.id, now()
                                  FROM tags
                                  WHERE tags.tag_name IN (:TAGS);
                                  `,
@@ -91,13 +94,13 @@ export const PostMutations: MutationResolvers = {
 
     return CreatedPost as unknown as Post;
   },
-  deletePost: async (_, { input }) => {
+  deletePost: async (_, { input }, { auth }) => {
     const { postId } = input;
 
     /**
      * Verify that the user is authenticated and authorized to perform the action.
      */
-    if (!auth.isUserLogged) {
+    if (!auth.isUserLoggedIn) {
       return {
         error: { message: 'user not authenticate.' }
       };
@@ -106,7 +109,10 @@ export const PostMutations: MutationResolvers = {
     /**
      *  Ensure that the user requesting the deletion is the actual owner of the post, by providing the logged in user id.
      */
-    const deletedPost = await DELETE_POST_WITH_ID(postId, auth.currentUser.id);
+    const deletedPost = await DELETE_POST_WITH_ID(
+      postId,
+      auth.user?.id as string
+    );
 
     /**
      *  if every-thing is O.K.

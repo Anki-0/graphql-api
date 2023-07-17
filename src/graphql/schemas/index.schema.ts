@@ -17,10 +17,15 @@ export default /* GraphQL */ `
 
   type Mutation {
     # Auth
-    signin(input: SigninInput!): SigninResponse!
-    signup(input: SignupInput!): SingupResponse!
+    signinWithCredentials(
+      input: SigninWithCredentialsInput!
+    ): SigninWithCredentialsResponse!
+    signupWithCredentials(
+      input: SignupWithCredentialsInput!
+    ): SignupWithCredentialsResponse!
     verifyToken(input: VerifyTokenInput!): VerifyTokenResponse!
-    createAccount(input: CreateAccountInput!): CreateAccountResponse!
+    # signup(input: SignupInput!): SingupResponse!
+    # createAccount(input: CreateAccountInput!): CreateAccountResponse!
 
     #Post
     createPost(input: PostCreationInput!): Post!

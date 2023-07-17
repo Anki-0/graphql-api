@@ -41,7 +41,7 @@ export default /* GraphQL */ `
     title: String @search(by: [exact])
     slug: String @search(by: [exact])
     publishedBy: String
-    status: PostStatus = published
+    status: PostStatus = published @search
     image: String
     content: String
     createdAt: DateTime @search
