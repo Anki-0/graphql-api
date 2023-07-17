@@ -2,17 +2,18 @@ import type { CodegenConfig } from '@graphql-codegen/cli';
 
 const config: CodegenConfig = {
   overwrite: true,
-  schema: './src/graphql/schemas/__generated__/typeDefs.ts',
-  emitLegacyCommonJSImports: false,
+  schema: 'http://localhost:4000/',
+  // : ['./src/graphql/schemas/__generated__/typeDefs.ts'],
   generates: {
     'src/types/__generated__/resolvers-types.ts': {
       plugins: ['typescript', 'typescript-resolvers'],
       config: {
         contextType: '../../graphql/context.js#Context',
-        useIndexSignature: true,
         scalars: {
           DateTime: 'Date | null'
-        }
+        },
+        useIndexSignature: true,
+        includeDirectives: true
       }
     }
   }
